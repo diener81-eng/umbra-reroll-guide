@@ -32,6 +32,7 @@ interface RecommendationResult {
   // Slot 5 by armor type
   slot5Stats?: string[];
   slot5Label?: string;
+  slot5Type?: 'helmPauldron' | 'beltBoots' | 'cuirassGreaves';
   // Group-based priority stats
   priorityStats?: string[];
   // Offensive gear specific
@@ -44,6 +45,31 @@ interface RecommendationResult {
   isPvP?: boolean;
 }
 
+// Helper to replace generic skill terms with actual skill names
+function formatSkillStat(stat: string, build: Build): string {
+  return stat
+    .replace('Basic Skill Dmg Up', `${build.basicSkill} Dmg Up`)
+    .replace('Basic Skill Haste', `${build.basicSkill} Haste`)
+    .replace('Core Skill Dmg Up', `${build.coreSkill} Dmg Up`)
+    .replace('Core Skill Dmg', `${build.coreSkill} Dmg`)
+    .replace('Core Skill Haste', `${build.coreSkill} Haste`)
+    .replace('Ultimate CD', `${build.ultimateSkill} CD`)
+    .replace('Ultimate Haste', `${build.ultimateSkill} Haste`);
+}
+
+// Check if a stat is a slot 5 skill stat that should be filtered from priority list
+function isSlot5SkillStat(stat: string, build: Build): boolean {
+  const skillPatterns = [
+    `${build.ultimateSkill} CD`,
+    `${build.ultimateSkill} Haste`,
+    `${build.coreSkill} Dmg`,
+    `${build.coreSkill} Haste`,
+    `${build.basicSkill} Dmg`,
+    `${build.basicSkill} Haste`,
+  ];
+  return skillPatterns.some(pattern => stat.includes(pattern));
+}
+
 function getRecommendations(gear: GearPiece, build?: Build): RecommendationResult {
   const result: RecommendationResult = { 
     gear, 
@@ -54,18 +80,28 @@ function getRecommendations(gear: GearPiece, build?: Build): RecommendationResul
   
   const gearGroup = getGearGroup(gear.id);
   
-  // Get priority stats based on gear group
+  // Get priority stats based on gear group, filtering out slot 5 stats for armor
   if (build) {
+    let priorityStats: string[] = [];
     switch (gearGroup) {
       case 'A':
-        result.priorityStats = build.statPriority.groupA;
+        priorityStats = build.statPriority.groupA;
         break;
       case 'B':
-        result.priorityStats = build.statPriority.groupB;
+        priorityStats = build.statPriority.groupB;
         break;
       case 'C':
-        result.priorityStats = build.statPriority.groupC;
+        priorityStats = build.statPriority.groupC;
         break;
+    }
+    
+    // Format stats with skill names and filter out slot 5 stats for armor
+    if (gear.category === 'armor') {
+      result.priorityStats = priorityStats
+        .map(stat => formatSkillStat(stat, build))
+        .filter(stat => !isSlot5SkillStat(stat, build));
+    } else {
+      result.priorityStats = priorityStats.map(stat => formatSkillStat(stat, build));
     }
   }
   
@@ -74,22 +110,14 @@ function getRecommendations(gear: GearPiece, build?: Build): RecommendationResul
     result.slot4Stats = build.statPriority.slot4;
   }
   
-  // Slot 5 for armor pieces - skill-specific stats
+  // Slot 5 for armor pieces - skill-specific stats with actual skill names
   if (gear.category === 'armor' && build) {
     const slot5Type = getArmorSlot5Type(gear.id);
     if (slot5Type) {
-      result.slot5Stats = build.statPriority.slot5[slot5Type];
-      switch (slot5Type) {
-        case 'helmPauldron':
-          result.slot5Label = `Basic Skill (${build.basicSkill})`;
-          break;
-        case 'beltBoots':
-          result.slot5Label = `Core Skill (${build.coreSkill})`;
-          break;
-        case 'cuirassGreaves':
-          result.slot5Label = `Ultimate Skill (${build.ultimateSkill})`;
-          break;
-      }
+      // Format slot 5 stats with actual skill names
+      result.slot5Stats = build.statPriority.slot5[slot5Type].map(stat => formatSkillStat(stat, build));
+      result.slot5Label = '5th Slot';
+      result.slot5Type = slot5Type;
     }
   }
   
@@ -273,13 +301,13 @@ export default function RerollAdvisor() {
           </p>
           
           <div className="space-y-4">
-            {/* ARMOR: Slot 5 for Ultimate (Ancient God builds - PRIORITY) */}
-            {recommendations?.isAncientGod && recommendations?.slot5Label?.includes('Ultimate') && recommendations?.slot5Stats && (
+            {/* ARMOR: Slot 5 for Ultimate (Ancient God builds on Cuirass/Greaves - PRIORITY) */}
+            {recommendations?.isAncientGod && recommendations?.slot5Type === 'cuirassGreaves' && recommendations?.slot5Stats && (
               <div className="p-4 rounded-lg bg-primary/10 border-2 border-primary/50">
                 <div className="flex items-center gap-2 mb-2">
                   <Zap className="w-5 h-5 text-primary" />
                   <span className="font-semibold text-primary">
-                    5th Slot — {recommendations.slot5Label}
+                    {recommendations.slot5Label}
                   </span>
                   <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full ml-auto font-semibold">
                     PRIORITY
@@ -324,13 +352,13 @@ export default function RerollAdvisor() {
               </div>
             )}
 
-            {/* ARMOR: Slot 5 for non-Ancient God OR non-Ultimate pieces */}
-            {recommendations?.slot5Stats && !(recommendations?.isAncientGod && recommendations?.slot5Label?.includes('Ultimate')) && (
+            {/* ARMOR: Slot 5 for non-Ancient God OR non-Cuirass/Greaves pieces */}
+            {recommendations?.slot5Stats && !(recommendations?.isAncientGod && recommendations?.slot5Type === 'cuirassGreaves') && (
               <div className="p-4 rounded-lg bg-skill/10 border border-skill/30">
                 <div className="flex items-center gap-2 mb-2">
                   <Target className="w-5 h-5 text-skill" />
                   <span className="font-semibold text-skill">
-                    5th Slot — {recommendations.slot5Label}
+                    {recommendations.slot5Label}
                   </span>
                 </div>
                 <div className="space-y-2 ml-7">
