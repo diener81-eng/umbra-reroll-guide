@@ -86,7 +86,7 @@ export default function RerollAdvisor() {
   
   const handleGearSelect = (gear: GearPiece) => {
     setSelectedGear(gear);
-    setSelectedBuild(null);
+    // Keep build selected when switching between armor pieces
   };
   
   const handleReset = () => {
@@ -182,7 +182,8 @@ export default function RerollAdvisor() {
       </div>
 
       {/* Reroll Recommendations - shown BETWEEN gear and build selection */}
-      {selectedGear && (
+      {/* For armor: only show if build is selected. For offensive: always show */}
+      {selectedGear && (selectedGear.category === 'offensive' || selectedBuild) && (
         <div className="card-game p-6 animate-fade-in border-2 border-primary/30">
           <h3 className="font-cinzel text-xl text-foreground flex items-center gap-2 mb-2">
             <Target className="w-6 h-6 text-primary" />
@@ -193,9 +194,6 @@ export default function RerollAdvisor() {
             For <span className="text-gradient-gold font-semibold">{selectedGear.name}</span>
             {selectedBuild && (
               <> with <span className="text-primary font-semibold">{selectedBuild.name}</span> build</>
-            )}
-            {needsBuild && !selectedBuild && (
-              <span className="text-muted-foreground"> — select a build below for skill-specific recommendations</span>
             )}
           </p>
           
