@@ -24,6 +24,7 @@ interface RecommendationResult {
   build?: Build;
   defensive?: string;
   skillSpecific?: string[];
+  ultimateSpecific?: string[];
   offensive?: string[];
 }
 
@@ -51,9 +52,14 @@ function getRecommendations(gear: GearPiece, build?: Build): RecommendationResul
         ];
         break;
       case 'control':
+        // Control skills: Cooldown/Haste
         result.skillSpecific = [
           ...build.controlSkills.map(s => `${s} Cooldown`),
           ...build.controlSkills.map(s => `${s} Haste`)
+        ];
+        // Ultimate skill: CD only (for specific builds)
+        result.ultimateSpecific = [
+          `${build.ultimateSkill} CD`
         ];
         break;
       case 'core':
@@ -234,8 +240,9 @@ export default function RerollAdvisor() {
               <p className="text-sm text-muted-foreground">
                 <span className="text-foreground font-medium">{selectedBuild.name}</span> uses{' '}
                 <span className="text-skill">{selectedBuild.basicSkill}</span> (Basic),{' '}
-                <span className="text-offensive">{selectedBuild.coreSkill}</span> (Core), and{' '}
-                <span className="text-defensive">{selectedBuild.controlSkills.join(' / ')}</span> (Control)
+                <span className="text-offensive">{selectedBuild.coreSkill}</span> (Core),{' '}
+                <span className="text-defensive">{selectedBuild.controlSkills.join(' / ')}</span> (Control), and{' '}
+                <span className="text-primary">{selectedBuild.ultimateSkill}</span> (Ultimate)
               </p>
             </div>
           )}
@@ -294,6 +301,32 @@ export default function RerollAdvisor() {
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+            
+            {/* Ultimate Skill (5th Slot - for Cuirass/Greaves only) */}
+            {recommendations.ultimateSpecific && (
+              <div className="p-4 rounded-lg bg-primary/10 border border-primary/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <Zap className="w-5 h-5 text-primary" />
+                  <span className="font-semibold text-primary">
+                    5th Slot — Ultimate Skill
+                  </span>
+                  <span className="text-xs bg-muted/50 text-muted-foreground px-2 py-0.5 rounded-full ml-auto">
+                    Build-specific
+                  </span>
+                </div>
+                <div className="space-y-1 ml-7">
+                  {recommendations.ultimateSpecific.map((stat, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <ChevronRight className="w-4 h-4 text-primary/70" />
+                      <span className="text-foreground font-medium">{stat}</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground mt-2 ml-7">
+                  Only recommended for builds that heavily rely on Ultimate uptime.
+                </p>
               </div>
             )}
             
