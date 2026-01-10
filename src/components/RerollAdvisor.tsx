@@ -93,9 +93,9 @@ function getRecommendations(gear: GearPiece, build?: Build): RecommendationResul
     }
   }
   
-  // Offensive gear (Weapon & Jewelry)
+  // Offensive gear (Weapon & Jewelry) - Crit Chance is the priority, not Thorn
   if (gear.category === 'offensive') {
-    result.offensive5thSlot = offensiveSlotConfig.slot5Only;
+    result.offensive5thSlot = ['Crit Chance'];
     result.offensiveAnySlot = offensiveSlotConfig.anySlot;
     return result;
   }
@@ -114,8 +114,9 @@ export default function RerollAdvisor() {
   const [selectedClass, setSelectedClass] = useState<BuildClass>('Arcanist');
   const [selectedBuild, setSelectedBuild] = useState<Build | null>(null);
   
-  const needsBuild = selectedGear?.category === 'armor';
-  const canShowResults = selectedGear && (!needsBuild || selectedBuild);
+  // All gear types benefit from build selection for priority stats
+  const needsBuild = selectedGear !== null;
+  const canShowResults = selectedGear !== null;
   const recommendations = canShowResults ? getRecommendations(selectedGear, selectedBuild ?? undefined) : null;
   
   const handleGearSelect = (gear: GearPiece) => {
@@ -254,7 +255,7 @@ export default function RerollAdvisor() {
       </div>
 
       {/* Reroll Recommendations */}
-      {selectedGear && (selectedGear.category === 'offensive' || selectedGear.category === 'accessory' || selectedBuild) && (
+      {selectedGear && (
         <div className="card-game p-6 animate-fade-in border-2 border-primary/30">
           <h3 className="font-cinzel text-xl text-foreground flex items-center gap-2 mb-2">
             <Target className="w-6 h-6 text-primary" />
@@ -376,13 +377,34 @@ export default function RerollAdvisor() {
               </div>
             )}
             
-            {/* OFFENSIVE: Other Slot Stats */}
-            {recommendations?.offensiveAnySlot && (
+            {/* OFFENSIVE: Build Priority Stats */}
+            {recommendations?.priorityStats && selectedGear.category === 'offensive' && (
+              <div className="p-4 rounded-lg bg-offensive/10 border border-offensive/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <Zap className="w-5 h-5 text-offensive" />
+                  <span className="font-semibold text-offensive">Other Slots — Build Priority Stats</span>
+                </div>
+                <p className="text-xs text-muted-foreground mb-3 ml-7">
+                  Prioritize these stats in order for slots 1-4 and 6:
+                </p>
+                <div className="space-y-2 ml-7">
+                  {recommendations.priorityStats.map((stat, i) => (
+                    <StatItem key={i} stat={stat} colorClass="text-offensive/70" priority={i + 1} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* OFFENSIVE: Other Slot Stats (when no build selected) */}
+            {recommendations?.offensiveAnySlot && !recommendations?.priorityStats && (
               <div className="p-4 rounded-lg bg-muted/30 border border-border/50">
                 <div className="flex items-center gap-2 mb-2">
                   <Target className="w-5 h-5 text-muted-foreground" />
                   <span className="font-semibold text-foreground">Other Slots — Available Stats</span>
                 </div>
+                <p className="text-xs text-muted-foreground mb-3 ml-7">
+                  Select a build to see priority order
+                </p>
                 <div className="space-y-2 ml-7">
                   {recommendations.offensiveAnySlot.map((stat, i) => (
                     <StatItem key={i} stat={stat} colorClass="text-muted-foreground" />
@@ -391,15 +413,33 @@ export default function RerollAdvisor() {
               </div>
             )}
             
-            {/* ACCESSORY: All Slots */}
-            {recommendations?.accessoryStats && (
+            {/* ACCESSORY: Build Priority Stats */}
+            {recommendations?.priorityStats && selectedGear.category === 'accessory' && (
+              <div className="p-4 rounded-lg bg-primary/10 border border-primary/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <Grip className="w-5 h-5 text-primary" />
+                  <span className="font-semibold text-primary">All Slots — Build Priority Stats</span>
+                </div>
+                <p className="text-xs text-muted-foreground mb-3 ml-7">
+                  Prioritize these stats in order for all 6 slots:
+                </p>
+                <div className="space-y-2 ml-7">
+                  {recommendations.priorityStats.map((stat, i) => (
+                    <StatItem key={i} stat={stat} colorClass="text-primary/70" priority={i + 1} />
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* ACCESSORY: All Slots (when no build selected) */}
+            {recommendations?.accessoryStats && !recommendations?.priorityStats && (
               <div className="p-4 rounded-lg bg-primary/10 border border-primary/30">
                 <div className="flex items-center gap-2 mb-2">
                   <Grip className="w-5 h-5 text-primary" />
                   <span className="font-semibold text-primary">All Slots — Available Stats</span>
                 </div>
                 <p className="text-xs text-muted-foreground mb-3 ml-7">
-                  All 6 slots on accessories can roll any of these stats.
+                  Select a build to see priority order
                 </p>
                 <div className="space-y-2 ml-7">
                   {recommendations.accessoryStats.map((stat, i) => (
