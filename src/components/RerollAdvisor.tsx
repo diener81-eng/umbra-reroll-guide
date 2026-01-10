@@ -8,6 +8,7 @@ import { Build, BuildClass, getBuildsByClass, getGearGroup, getArmorSlot5Type } 
 import { cn } from '@/lib/utils';
 import StatItem from './StatItem';
 import { offensiveSlotConfig, accessorySlotConfig } from '@/data/stats';
+import { armorSlotConfig } from '@/data/stats';
 
 const iconMap: Record<string, React.ElementType> = {
   'hard-hat': HardHat,
@@ -96,11 +97,14 @@ function getRecommendations(gear: GearPiece, build?: Build): RecommendationResul
     }
     
     // Format stats with skill names and filter out slot 5 stats for armor
-    if (gear.category === 'armor') {
-      result.priorityStats = priorityStats
-        .map(stat => formatSkillStat(stat, build))
-        .filter(stat => !isSlot5SkillStat(stat, build));
-    } else {
+if (gear.category === 'armor') {
+  const validArmorStats = armorSlotConfig.anySlot;
+
+  result.priorityStats = priorityStats
+    .map(stat => formatSkillStat(stat, build))
+    .filter(stat => !isSlot5SkillStat(stat, build))
+    .filter(stat => validArmorStats.includes(stat));
+}else {
       result.priorityStats = priorityStats.map(stat => formatSkillStat(stat, build));
     }
   }
@@ -122,17 +126,17 @@ function getRecommendations(gear: GearPiece, build?: Build): RecommendationResul
   }
   
   // Offensive gear (Weapon & Jewelry) - Crit Chance is the priority, not Thorn
-  if (gear.category === 'offensive') {
-    result.offensive5thSlot = ['Crit Chance'];
-    result.offensiveAnySlot = offensiveSlotConfig.anySlot;
-    return result;
-  }
+if (gear.category === 'offensive') {
+  result.offensive5thSlot = ['Crit Chance'];
+  result.offensiveAnySlot = offensiveSlotConfig.anySlot;
+}
+
   
   // Accessories (Gauntlets, Bracers) - all slots can have any stat
-  if (gear.category === 'accessory') {
-    result.accessoryStats = accessorySlotConfig.anySlot;
-    return result;
-  }
+if (gear.category === 'accessory') {
+  result.accessoryStats = accessorySlotConfig.anySlot;
+}
+
   
   return result;
 }
