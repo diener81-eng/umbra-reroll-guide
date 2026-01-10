@@ -28,10 +28,15 @@ interface RecommendationResult {
   skillSpecific?: string[];
   ultimateSpecific?: string[];
   offensive?: string[];
+  isAncientGod?: boolean;
+}
+
+function isAncientGodBuild(build?: Build): boolean {
+  return build?.name.includes('Ancient God') ?? false;
 }
 
 function getRecommendations(gear: GearPiece, build?: Build): RecommendationResult {
-  const result: RecommendationResult = { gear, build };
+  const result: RecommendationResult = { gear, build, isAncientGod: isAncientGodBuild(build) };
   
   // Defensive slot (4th) - only for armor
   if (gear.has4thSlot) {
@@ -40,7 +45,7 @@ function getRecommendations(gear: GearPiece, build?: Build): RecommendationResul
   
   // Offensive gear (5th slot)
   if (gear.category === 'offensive') {
-    result.offensive = ['Critical', 'Additional Damage Chance'];
+    result.offensive = ['Crit Chance', 'Additional Damage Chance'];
     return result;
   }
   
@@ -199,7 +204,33 @@ export default function RerollAdvisor() {
           </p>
           
           <div className="space-y-4">
-            {/* Defensive (4th Slot) - first */}
+            {/* Ultimate Skill PRIORITY - for Ancient God builds on Cuirass/Greaves */}
+            {recommendations?.isAncientGod && recommendations?.ultimateSpecific && (
+              <div className="p-4 rounded-lg bg-primary/10 border-2 border-primary/50">
+                <div className="flex items-center gap-2 mb-2">
+                  <Zap className="w-5 h-5 text-primary" />
+                  <span className="font-semibold text-primary">
+                    5th Slot — Ultimate Skill
+                  </span>
+                  <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full ml-auto font-semibold">
+                    PRIORITY
+                  </span>
+                </div>
+                <div className="space-y-2 ml-7">
+                  {recommendations.ultimateSpecific.map((stat, i) => (
+                    <StatItem key={i} stat={stat} colorClass="text-primary/70" />
+                  ))}
+                </div>
+                <p className="text-xs mt-3 ml-7 p-2 rounded bg-destructive/10 border border-destructive/30">
+                  <span className="text-destructive font-semibold">Target: 8%+ per piece</span>
+                  <span className="text-muted-foreground"> — Requires at least one </span>
+                  <span className="text-destructive font-semibold">Primal</span>
+                  <span className="text-muted-foreground"> piece. Aim for 15%+ total CD across Cuirass and Greaves combined.</span>
+                </p>
+              </div>
+            )}
+
+            {/* Defensive (4th Slot) */}
             {selectedGear.has4thSlot && (
               <div className="p-4 rounded-lg bg-defensive/10 border border-defensive/30">
                 <div className="flex items-center gap-2 mb-2">
@@ -229,8 +260,8 @@ export default function RerollAdvisor() {
               </div>
             )}
             
-            {/* Ultimate Skill (5th Slot - for Cuirass/Greaves only) */}
-            {recommendations?.ultimateSpecific && (
+            {/* Ultimate Skill (5th Slot - for non-Ancient God builds on Cuirass/Greaves) */}
+            {!recommendations?.isAncientGod && recommendations?.ultimateSpecific && (
               <div className="p-4 rounded-lg bg-primary/10 border border-primary/30">
                 <div className="flex items-center gap-2 mb-2">
                   <Zap className="w-5 h-5 text-primary" />
