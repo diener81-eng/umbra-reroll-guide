@@ -144,7 +144,7 @@ export default function RerollAdvisor() {
   
   // All gear types benefit from build selection for priority stats
   const needsBuild = selectedGear !== null;
-  const canShowResults = selectedGear !== null;
+  const canShowResults = selectedGear !== null && selectedBuild !== null;
   const recommendations = canShowResults ? getRecommendations(selectedGear, selectedBuild ?? undefined) : null;
   
   const handleGearSelect = (gear: GearPiece) => {
@@ -283,7 +283,7 @@ export default function RerollAdvisor() {
       </div>
 
       {/* Reroll Recommendations */}
-      {selectedGear && (
+      {selectedGear && selectedBuild && (
         <div className="card-game p-6 animate-fade-in border-2 border-primary/30">
           <h3 className="font-cinzel text-xl text-foreground flex items-center gap-2 mb-2">
             <Target className="w-6 h-6 text-primary" />
