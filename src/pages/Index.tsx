@@ -79,7 +79,7 @@ export default function Index() {
                     </div>
                     
                     <a 
-                      href="https://www.youtube.com/watch?v=example" 
+                      href="https://www.youtube.com/shorts/biXkvFLJKVM" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
@@ -116,6 +116,29 @@ export default function Index() {
           </div>
         </div>
       </div>
+
+      {/* Footer with Wiki Attribution */}
+      <footer className="border-t border-border/50 bg-muted/20">
+        <div className="container mx-auto px-4 py-6">
+          <div className="text-center text-sm text-muted-foreground">
+            <p className="mb-2">
+              Data sourced from the{' '}
+              <a 
+                href="https://lootbornwarriors.miraheze.org/wiki/Umbra_Reroll#"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline inline-flex items-center gap-1"
+              >
+                Lootborn Warriors Wiki
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </p>
+            <p className="text-xs text-muted-foreground/70">
+              Community-driven resource for Lootborn Warriors players
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
