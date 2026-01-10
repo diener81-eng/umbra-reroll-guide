@@ -1,7 +1,7 @@
 import { Lightbulb } from "lucide-react";
 
 interface ProTipProps {
-  children: string;
+  children: React.ReactNode;
 }
 
 export function ProTip({ children }: ProTipProps) {
