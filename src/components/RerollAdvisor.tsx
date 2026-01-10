@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { 
   HardHat, Shield, Shirt, Footprints, Circle, Sword, Gem, Sparkles, CircleDot,
-  Zap, ShieldCheck, Target, ChevronRight, RotateCcw, RectangleVertical
+  Zap, ShieldCheck, Target, RotateCcw, RectangleVertical
 } from 'lucide-react';
 import { gearPieces, GearPiece, getSkillSlotLabel } from '@/data/gear';
 import { Build, BuildClass, getBuildsByClass } from '@/data/builds';
 import { cn } from '@/lib/utils';
+import StatItem from './StatItem';
 
 const iconMap: Record<string, React.ElementType> = {
   'hard-hat': HardHat,
@@ -205,9 +206,8 @@ export default function RerollAdvisor() {
                   <ShieldCheck className="w-5 h-5 text-defensive" />
                   <span className="font-semibold text-defensive">4th Slot — Defensive</span>
                 </div>
-                <div className="flex items-center gap-2 ml-7">
-                  <ChevronRight className="w-4 h-4 text-defensive/70" />
-                  <span className="text-foreground font-medium">Evasion</span>
+                <div className="ml-7">
+                  <StatItem stat="Evasion" colorClass="text-defensive/70" />
                 </div>
               </div>
             )}
@@ -221,12 +221,9 @@ export default function RerollAdvisor() {
                     5th Slot — {getSkillSlotLabel(selectedGear.skillSlotType)}
                   </span>
                 </div>
-                <div className="space-y-1 ml-7">
+                <div className="space-y-2 ml-7">
                   {recommendations.skillSpecific.map((stat, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <ChevronRight className="w-4 h-4 text-skill/70" />
-                      <span className="text-foreground font-medium">{stat}</span>
-                    </div>
+                    <StatItem key={i} stat={stat} colorClass="text-skill/70" />
                   ))}
                 </div>
               </div>
@@ -244,12 +241,9 @@ export default function RerollAdvisor() {
                     Build-specific
                   </span>
                 </div>
-                <div className="space-y-1 ml-7">
+                <div className="space-y-2 ml-7">
                   {recommendations.ultimateSpecific.map((stat, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <ChevronRight className="w-4 h-4 text-primary/70" />
-                      <span className="text-foreground font-medium">{stat}</span>
-                    </div>
+                    <StatItem key={i} stat={stat} colorClass="text-primary/70" />
                   ))}
                 </div>
                 <p className="text-xs text-muted-foreground mt-2 ml-7">
@@ -265,12 +259,9 @@ export default function RerollAdvisor() {
                   <Zap className="w-5 h-5 text-offensive" />
                   <span className="font-semibold text-offensive">5th Slot — Offensive</span>
                 </div>
-                <div className="space-y-1 ml-7">
+                <div className="space-y-2 ml-7">
                   {recommendations.offensive.map((stat, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <ChevronRight className="w-4 h-4 text-offensive/70" />
-                      <span className="text-foreground font-medium">{stat}</span>
-                    </div>
+                    <StatItem key={i} stat={stat} colorClass="text-offensive/70" />
                   ))}
                 </div>
               </div>
