@@ -92,8 +92,9 @@ function getRecommendations(gear: GearPiece, build?: Build): RecommendationResul
         priorityStats = build.statPriority.groupB;
         break;
       case 'C':
-        priorityStats = build.statPriority.groupC;
-        break;
+        priorityStats = build.statPriority.defense;
+      break;
+
     }
     
     // Format stats with skill names and filter out slot 5 stats for armor
@@ -102,7 +103,6 @@ if (gear.category === 'armor') {
 
   result.priorityStats = priorityStats
     .map(stat => formatSkillStat(stat, build))
-    .filter(stat => !isSlot5SkillStat(stat, build))
     .filter(stat => validArmorStats.includes(stat));
 }else {
       result.priorityStats = priorityStats.map(stat => formatSkillStat(stat, build));
