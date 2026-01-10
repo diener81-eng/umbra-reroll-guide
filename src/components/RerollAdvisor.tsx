@@ -198,16 +198,27 @@ export default function RerollAdvisor() {
           </p>
           
           <div className="space-y-4">
-            {/* Skill-Specific (5th Slot) - PRIORITY ON TOP */}
+            {/* Defensive (4th Slot) - first */}
+            {selectedGear.has4thSlot && (
+              <div className="p-4 rounded-lg bg-defensive/10 border border-defensive/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <ShieldCheck className="w-5 h-5 text-defensive" />
+                  <span className="font-semibold text-defensive">4th Slot — Defensive</span>
+                </div>
+                <div className="flex items-center gap-2 ml-7">
+                  <ChevronRight className="w-4 h-4 text-defensive/70" />
+                  <span className="text-foreground font-medium">Evasion</span>
+                </div>
+              </div>
+            )}
+
+            {/* Skill-Specific (5th Slot) */}
             {recommendations?.skillSpecific && (
               <div className="p-4 rounded-lg bg-skill/10 border border-skill/30">
                 <div className="flex items-center gap-2 mb-2">
                   <Target className="w-5 h-5 text-skill" />
                   <span className="font-semibold text-skill">
                     5th Slot — {getSkillSlotLabel(selectedGear.skillSlotType)}
-                  </span>
-                  <span className="text-xs bg-skill/20 text-skill px-2 py-0.5 rounded-full ml-auto">
-                    Priority!
                   </span>
                 </div>
                 <div className="space-y-1 ml-7">
@@ -253,9 +264,6 @@ export default function RerollAdvisor() {
                 <div className="flex items-center gap-2 mb-2">
                   <Zap className="w-5 h-5 text-offensive" />
                   <span className="font-semibold text-offensive">5th Slot — Offensive</span>
-                  <span className="text-xs bg-offensive/20 text-offensive px-2 py-0.5 rounded-full ml-auto">
-                    Priority!
-                  </span>
                 </div>
                 <div className="space-y-1 ml-7">
                   {recommendations.offensive.map((stat, i) => (
@@ -264,20 +272,6 @@ export default function RerollAdvisor() {
                       <span className="text-foreground font-medium">{stat}</span>
                     </div>
                   ))}
-                </div>
-              </div>
-            )}
-
-            {/* Defensive (4th Slot) - below 5th slot */}
-            {selectedGear.has4thSlot && (
-              <div className="p-4 rounded-lg bg-defensive/10 border border-defensive/30">
-                <div className="flex items-center gap-2 mb-2">
-                  <ShieldCheck className="w-5 h-5 text-defensive" />
-                  <span className="font-semibold text-defensive">4th Slot — Defensive</span>
-                </div>
-                <div className="flex items-center gap-2 ml-7">
-                  <ChevronRight className="w-4 h-4 text-defensive/70" />
-                  <span className="text-foreground font-medium">Evasion</span>
                 </div>
               </div>
             )}
