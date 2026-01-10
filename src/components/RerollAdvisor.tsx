@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { 
   HardHat, Shield, Shirt, Footprints, Circle, Sword, Gem, Sparkles, CircleDot,
-  Zap, ShieldCheck, Target, ChevronRight, RotateCcw
+  Zap, ShieldCheck, Target, ChevronRight, RotateCcw, RectangleVertical
 } from 'lucide-react';
 import { gearPieces, GearPiece, getSkillSlotLabel } from '@/data/gear';
 import { Build, BuildClass, getBuildsByClass } from '@/data/builds';
@@ -17,6 +17,7 @@ const iconMap: Record<string, React.ElementType> = {
   'gem': Gem,
   'sparkles': Sparkles,
   'circle-dot': CircleDot,
+  'rectangle-vertical': RectangleVertical,
 };
 
 interface RecommendationResult {
@@ -152,7 +153,7 @@ export default function RerollAdvisor() {
         <div>
           <p className="text-sm text-muted-foreground mb-2 flex items-center gap-2">
             <Zap className="w-4 h-4 text-offensive" />
-            Weapon & Jewelry (Offensive Stats Only)
+            Weapon & Jewelry (Offensive Stats Only) — Always roll Crit Chance and/or Additional Damage Chance on 5th slot
           </p>
           <div className="grid grid-cols-4 gap-2">
             {offensivePieces.map((gear) => {
@@ -180,7 +181,113 @@ export default function RerollAdvisor() {
         </div>
       </div>
 
-      {/* Step 2: Build Selection (only for armor) */}
+      {/* Reroll Recommendations - shown BETWEEN gear and build selection */}
+      {selectedGear && (
+        <div className="card-game p-6 animate-fade-in border-2 border-primary/30">
+          <h3 className="font-cinzel text-xl text-foreground flex items-center gap-2 mb-2">
+            <Target className="w-6 h-6 text-primary" />
+            Reroll Recommendations
+          </h3>
+          
+          <p className="text-muted-foreground mb-6">
+            For <span className="text-gradient-gold font-semibold">{selectedGear.name}</span>
+            {selectedBuild && (
+              <> with <span className="text-primary font-semibold">{selectedBuild.name}</span> build</>
+            )}
+            {needsBuild && !selectedBuild && (
+              <span className="text-muted-foreground"> — select a build below for skill-specific recommendations</span>
+            )}
+          </p>
+          
+          <div className="space-y-4">
+            {/* Skill-Specific (5th Slot) - PRIORITY ON TOP */}
+            {recommendations?.skillSpecific && (
+              <div className="p-4 rounded-lg bg-skill/10 border border-skill/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <Target className="w-5 h-5 text-skill" />
+                  <span className="font-semibold text-skill">
+                    5th Slot — {getSkillSlotLabel(selectedGear.skillSlotType)}
+                  </span>
+                  <span className="text-xs bg-skill/20 text-skill px-2 py-0.5 rounded-full ml-auto">
+                    Priority!
+                  </span>
+                </div>
+                <div className="space-y-1 ml-7">
+                  {recommendations.skillSpecific.map((stat, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <ChevronRight className="w-4 h-4 text-skill/70" />
+                      <span className="text-foreground font-medium">{stat}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Ultimate Skill (5th Slot - for Cuirass/Greaves only) */}
+            {recommendations?.ultimateSpecific && (
+              <div className="p-4 rounded-lg bg-primary/10 border border-primary/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <Zap className="w-5 h-5 text-primary" />
+                  <span className="font-semibold text-primary">
+                    5th Slot — Ultimate Skill
+                  </span>
+                  <span className="text-xs bg-muted/50 text-muted-foreground px-2 py-0.5 rounded-full ml-auto">
+                    Build-specific
+                  </span>
+                </div>
+                <div className="space-y-1 ml-7">
+                  {recommendations.ultimateSpecific.map((stat, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <ChevronRight className="w-4 h-4 text-primary/70" />
+                      <span className="text-foreground font-medium">{stat}</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground mt-2 ml-7">
+                  Only recommended for builds that heavily rely on Ultimate uptime.
+                </p>
+              </div>
+            )}
+            
+            {/* Offensive (5th Slot) - for weapons/jewelry */}
+            {recommendations?.offensive && (
+              <div className="p-4 rounded-lg bg-offensive/10 border border-offensive/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <Zap className="w-5 h-5 text-offensive" />
+                  <span className="font-semibold text-offensive">5th Slot — Offensive</span>
+                  <span className="text-xs bg-offensive/20 text-offensive px-2 py-0.5 rounded-full ml-auto">
+                    Priority!
+                  </span>
+                </div>
+                <div className="space-y-1 ml-7">
+                  {recommendations.offensive.map((stat, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <ChevronRight className="w-4 h-4 text-offensive/70" />
+                      <span className="text-foreground font-medium">{stat}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Defensive (4th Slot) - below 5th slot */}
+            {selectedGear.has4thSlot && (
+              <div className="p-4 rounded-lg bg-defensive/10 border border-defensive/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <ShieldCheck className="w-5 h-5 text-defensive" />
+                  <span className="font-semibold text-defensive">4th Slot — Defensive</span>
+                </div>
+                <div className="flex items-center gap-2 ml-7">
+                  <ChevronRight className="w-4 h-4 text-defensive/70" />
+                  <span className="text-foreground font-medium">Evasion</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Step 2: Build Selection (only for armor) - comes AFTER recommendations */}
       {selectedGear && needsBuild && (
         <div className="card-game p-6 animate-fade-in">
           <h3 className="font-cinzel text-xl text-foreground flex items-center gap-2 mb-4">
@@ -246,108 +353,6 @@ export default function RerollAdvisor() {
               </p>
             </div>
           )}
-        </div>
-      )}
-
-      {/* Step 3: Results */}
-      {recommendations && (
-        <div className="card-game p-6 animate-fade-in border-2 border-primary/30">
-          <h3 className="font-cinzel text-xl text-foreground flex items-center gap-2 mb-2">
-            <span className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-sm text-primary">
-              {needsBuild ? '3' : '2'}
-            </span>
-            Reroll Recommendations
-          </h3>
-          
-          <p className="text-muted-foreground mb-6">
-            For <span className="text-gradient-gold font-semibold">{recommendations.gear.name}</span>
-            {recommendations.build && (
-              <> with <span className="text-primary font-semibold">{recommendations.build.name}</span> build</>
-            )}
-          </p>
-          
-          <div className="space-y-4">
-            {/* Defensive (4th Slot) */}
-            {recommendations.defensive && (
-              <div className="p-4 rounded-lg bg-defensive/10 border border-defensive/30">
-                <div className="flex items-center gap-2 mb-2">
-                  <ShieldCheck className="w-5 h-5 text-defensive" />
-                  <span className="font-semibold text-defensive">4th Slot — Defensive</span>
-                </div>
-                <div className="flex items-center gap-2 ml-7">
-                  <ChevronRight className="w-4 h-4 text-defensive/70" />
-                  <span className="text-foreground font-medium">{recommendations.defensive}</span>
-                </div>
-              </div>
-            )}
-            
-            {/* Skill-Specific (5th Slot) */}
-            {recommendations.skillSpecific && (
-              <div className="p-4 rounded-lg bg-skill/10 border border-skill/30">
-                <div className="flex items-center gap-2 mb-2">
-                  <Target className="w-5 h-5 text-skill" />
-                  <span className="font-semibold text-skill">
-                    5th Slot — {getSkillSlotLabel(recommendations.gear.skillSlotType)}
-                  </span>
-                  <span className="text-xs bg-skill/20 text-skill px-2 py-0.5 rounded-full ml-auto">
-                    Priority!
-                  </span>
-                </div>
-                <div className="space-y-1 ml-7">
-                  {recommendations.skillSpecific.map((stat, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <ChevronRight className="w-4 h-4 text-skill/70" />
-                      <span className="text-foreground font-medium">{stat}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {/* Ultimate Skill (5th Slot - for Cuirass/Greaves only) */}
-            {recommendations.ultimateSpecific && (
-              <div className="p-4 rounded-lg bg-primary/10 border border-primary/30">
-                <div className="flex items-center gap-2 mb-2">
-                  <Zap className="w-5 h-5 text-primary" />
-                  <span className="font-semibold text-primary">
-                    5th Slot — Ultimate Skill
-                  </span>
-                  <span className="text-xs bg-muted/50 text-muted-foreground px-2 py-0.5 rounded-full ml-auto">
-                    Build-specific
-                  </span>
-                </div>
-                <div className="space-y-1 ml-7">
-                  {recommendations.ultimateSpecific.map((stat, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <ChevronRight className="w-4 h-4 text-primary/70" />
-                      <span className="text-foreground font-medium">{stat}</span>
-                    </div>
-                  ))}
-                </div>
-                <p className="text-xs text-muted-foreground mt-2 ml-7">
-                  Only recommended for builds that heavily rely on Ultimate uptime.
-                </p>
-              </div>
-            )}
-            
-            {/* Offensive (5th Slot) */}
-            {recommendations.offensive && (
-              <div className="p-4 rounded-lg bg-offensive/10 border border-offensive/30">
-                <div className="flex items-center gap-2 mb-2">
-                  <Zap className="w-5 h-5 text-offensive" />
-                  <span className="font-semibold text-offensive">5th Slot — Offensive</span>
-                </div>
-                <div className="space-y-1 ml-7">
-                  {recommendations.offensive.map((stat, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <ChevronRight className="w-4 h-4 text-offensive/70" />
-                      <span className="text-foreground font-medium">{stat}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
         </div>
       )}
     </div>
