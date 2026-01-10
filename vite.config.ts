@@ -5,7 +5,7 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: '/umbra-reroll-advisor/',
+  base: '/umbra-reroll-guide/',
   server: {
     host: "::",
     port: 8080,
