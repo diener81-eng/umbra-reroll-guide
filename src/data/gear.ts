@@ -1,5 +1,5 @@
-export type GearCategory = 'armor' | 'offensive';
-export type SkillSlotType = 'basic' | 'control' | 'core' | 'offensive';
+export type GearCategory = 'armor' | 'offensive' | 'accessory';
+export type SkillSlotType = 'basic' | 'control' | 'core' | 'offensive' | 'none';
 
 export interface GearPiece {
   id: string;
@@ -23,11 +23,15 @@ export const gearPieces: GearPiece[] = [
   { id: 'boots', name: 'Boots', icon: 'footprints', category: 'armor', skillSlotType: 'core', has4thSlot: true },
   { id: 'belt', name: 'Belt', icon: 'circle', category: 'armor', skillSlotType: 'core', has4thSlot: true },
   
-  // Offensive Gear - No build needed
+  // Offensive Gear - Weapon & Jewelry
   { id: 'weapon', name: 'Weapon', icon: 'sword', category: 'offensive', skillSlotType: 'offensive', has4thSlot: false },
   { id: 'necklace', name: 'Necklace', icon: 'gem', category: 'offensive', skillSlotType: 'offensive', has4thSlot: false },
   { id: 'amulet', name: 'Amulet', icon: 'sparkles', category: 'offensive', skillSlotType: 'offensive', has4thSlot: false },
   { id: 'ring', name: 'Ring', icon: 'circle-dot', category: 'offensive', skillSlotType: 'offensive', has4thSlot: false },
+  
+  // Accessories - All slots can have any stat
+  { id: 'gauntlets', name: 'Gauntlets', icon: 'hand', category: 'accessory', skillSlotType: 'none', has4thSlot: false },
+  { id: 'bracers', name: 'Bracers', icon: 'shield-half', category: 'accessory', skillSlotType: 'none', has4thSlot: false },
 ];
 
 export function getGearById(id: string): GearPiece | undefined {
@@ -40,6 +44,10 @@ export function getArmorPieces(): GearPiece[] {
 
 export function getOffensivePieces(): GearPiece[] {
   return gearPieces.filter(g => g.category === 'offensive');
+}
+
+export function getAccessoryPieces(): GearPiece[] {
+  return gearPieces.filter(g => g.category === 'accessory');
 }
 
 export function getSkillSlotLabel(type: SkillSlotType): string {

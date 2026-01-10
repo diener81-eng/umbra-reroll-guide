@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { 
   HardHat, Shield, Shirt, Footprints, Circle, Sword, Gem, Sparkles, CircleDot,
-  Zap, ShieldCheck, Target, RotateCcw, RectangleVertical
+  Zap, ShieldCheck, Target, RotateCcw, RectangleVertical, Hand, ShieldHalf, Grip
 } from 'lucide-react';
 import { gearPieces, GearPiece, getSkillSlotLabel } from '@/data/gear';
 import { Build, BuildClass, getBuildsByClass } from '@/data/builds';
 import { cn } from '@/lib/utils';
 import StatItem from './StatItem';
+import { offensiveSlotConfig, accessorySlotConfig } from '@/data/stats';
 
 const iconMap: Record<string, React.ElementType> = {
   'hard-hat': HardHat,
@@ -19,6 +20,8 @@ const iconMap: Record<string, React.ElementType> = {
   'sparkles': Sparkles,
   'circle-dot': CircleDot,
   'rectangle-vertical': RectangleVertical,
+  'hand': Hand,
+  'shield-half': ShieldHalf,
 };
 
 interface RecommendationResult {
@@ -27,7 +30,9 @@ interface RecommendationResult {
   defensive?: string;
   skillSpecific?: string[];
   ultimateSpecific?: string[];
-  offensive?: string[];
+  offensive5thSlot?: string[];  // 5th slot exclusive stats for offensive gear
+  offensiveAnySlot?: string[];  // Any slot stats for offensive gear
+  accessoryStats?: string[];    // All available stats for accessories
   isAncientGod?: boolean;
 }
 
@@ -43,9 +48,16 @@ function getRecommendations(gear: GearPiece, build?: Build): RecommendationResul
     result.defensive = 'Evasion';
   }
   
-  // Offensive gear (5th slot)
+  // Offensive gear (Weapon & Jewelry)
   if (gear.category === 'offensive') {
-    result.offensive = ['Crit Chance', 'Additional Damage Chance'];
+    result.offensive5thSlot = offensiveSlotConfig.slot5Only;
+    result.offensiveAnySlot = offensiveSlotConfig.anySlot;
+    return result;
+  }
+  
+  // Accessories (Gauntlets, Bracers) - all slots can have any stat
+  if (gear.category === 'accessory') {
+    result.accessoryStats = accessorySlotConfig.anySlot;
     return result;
   }
   
@@ -88,6 +100,7 @@ export default function RerollAdvisor() {
   
   const needsBuild = selectedGear?.category === 'armor';
   const canShowResults = selectedGear && (!needsBuild || selectedBuild);
+  const isAccessory = selectedGear?.category === 'accessory';
   const recommendations = canShowResults ? getRecommendations(selectedGear, selectedBuild ?? undefined) : null;
   
   const handleGearSelect = (gear: GearPiece) => {
@@ -102,6 +115,7 @@ export default function RerollAdvisor() {
 
   const armorPieces = gearPieces.filter(g => g.category === 'armor');
   const offensivePieces = gearPieces.filter(g => g.category === 'offensive');
+  const accessoryPieces = gearPieces.filter(g => g.category === 'accessory');
   const builds = getBuildsByClass(selectedClass);
   
   const isAncientGodSelected = isAncientGodBuild(selectedBuild);
@@ -191,11 +205,42 @@ export default function RerollAdvisor() {
             })}
           </div>
         </div>
+        
+        {/* Accessories */}
+        <div>
+          <p className="text-sm text-muted-foreground mb-2 flex items-center gap-2">
+            <Grip className="w-4 h-4 text-primary" />
+            Accessories (All Slots Flexible)
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            {accessoryPieces.map((gear) => {
+              const Icon = iconMap[gear.icon] || Circle;
+              const isSelected = selectedGear?.id === gear.id;
+              return (
+                <button
+                  key={gear.id}
+                  onClick={() => handleGearSelect(gear)}
+                  className={cn(
+                    "flex flex-col items-center gap-2 p-3 rounded-lg border transition-all duration-200",
+                    isSelected
+                      ? "border-primary bg-primary/10 glow-offensive"
+                      : "border-border/50 bg-card/50 hover:border-primary/50 hover:bg-primary/5"
+                  )}
+                >
+                  <Icon className={cn("w-6 h-6", isSelected ? "text-primary" : "text-muted-foreground")} />
+                  <span className={cn("text-xs font-medium", isSelected ? "text-primary" : "text-foreground")}>
+                    {gear.name}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       {/* Reroll Recommendations - shown BETWEEN gear and build selection */}
       {/* For armor: only show if build is selected. For offensive: always show */}
-      {selectedGear && (selectedGear.category === 'offensive' || selectedBuild) && (
+      {selectedGear && (selectedGear.category === 'offensive' || selectedGear.category === 'accessory' || selectedBuild) && (
         <div className="card-game p-6 animate-fade-in border-2 border-primary/30">
           <h3 className="font-cinzel text-xl text-foreground flex items-center gap-2 mb-2">
             <Target className="w-6 h-6 text-primary" />
@@ -289,16 +334,52 @@ export default function RerollAdvisor() {
               </div>
             )}
             
-            {/* Offensive (5th Slot) - for weapons/jewelry */}
-            {recommendations?.offensive && (
-              <div className="p-4 rounded-lg bg-offensive/10 border border-offensive/30">
+            {/* Offensive 5th Slot - for weapons/jewelry */}
+            {recommendations?.offensive5thSlot && (
+              <div className="p-4 rounded-lg bg-offensive/10 border-2 border-offensive/50">
                 <div className="flex items-center gap-2 mb-2">
                   <Zap className="w-5 h-5 text-offensive" />
-                  <span className="font-semibold text-offensive">5th Slot — Offensive</span>
+                  <span className="font-semibold text-offensive">5th Slot — Priority Stats</span>
+                  <span className="text-xs bg-offensive/20 text-offensive px-2 py-0.5 rounded-full ml-auto font-semibold">
+                    PRIORITY
+                  </span>
                 </div>
                 <div className="space-y-2 ml-7">
-                  {recommendations.offensive.map((stat, i) => (
+                  {recommendations.offensive5thSlot.map((stat, i) => (
                     <StatItem key={i} stat={stat} colorClass="text-offensive/70" />
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Offensive Any Slot - other stats for weapons/jewelry */}
+            {recommendations?.offensiveAnySlot && (
+              <div className="p-4 rounded-lg bg-muted/30 border border-border/50">
+                <div className="flex items-center gap-2 mb-2">
+                  <Target className="w-5 h-5 text-muted-foreground" />
+                  <span className="font-semibold text-foreground">Other Slots — Available Stats</span>
+                </div>
+                <div className="space-y-2 ml-7">
+                  {recommendations.offensiveAnySlot.map((stat, i) => (
+                    <StatItem key={i} stat={stat} colorClass="text-muted-foreground" />
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Accessory Stats - all slots flexible */}
+            {recommendations?.accessoryStats && (
+              <div className="p-4 rounded-lg bg-primary/10 border border-primary/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <Grip className="w-5 h-5 text-primary" />
+                  <span className="font-semibold text-primary">All Slots — Available Stats</span>
+                </div>
+                <p className="text-xs text-muted-foreground mb-3 ml-7">
+                  All 6 slots on accessories can roll any of these stats.
+                </p>
+                <div className="space-y-2 ml-7">
+                  {recommendations.accessoryStats.map((stat, i) => (
+                    <StatItem key={i} stat={stat} colorClass="text-primary/70" />
                   ))}
                 </div>
               </div>
