@@ -17,7 +17,7 @@ export const gearPieces: GearPiece[] = [
   
   // Armor - Control Skills (Cuirass, Greaves)
   { id: 'cuirass', name: 'Cuirass', icon: 'shirt', category: 'armor', skillSlotType: 'control', has4thSlot: true },
-  { id: 'greaves', name: 'Greaves', icon: 'footprints', category: 'armor', skillSlotType: 'control', has4thSlot: true },
+  { id: 'greaves', name: 'Greaves', icon: 'rectangle-vertical', category: 'armor', skillSlotType: 'control', has4thSlot: true },
   
   // Armor - Core Skills (Boots, Belt)
   { id: 'boots', name: 'Boots', icon: 'footprints', category: 'armor', skillSlotType: 'core', has4thSlot: true },

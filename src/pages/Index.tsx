@@ -1,6 +1,5 @@
-import { Sparkles, BookOpen, Lightbulb, ExternalLink } from 'lucide-react';
+import { Sparkles, BookOpen, ExternalLink } from 'lucide-react';
 import RerollAdvisor from '@/components/RerollAdvisor';
-import { ProTip } from '@/components/ProTip';
 import {
   Accordion,
   AccordionContent,
@@ -59,7 +58,7 @@ export default function Index() {
                       <div className="p-3 rounded-lg bg-muted/30 border border-border/50">
                         <p className="font-semibold text-sm text-foreground mb-1">Basic Rules</p>
                         <ul className="text-sm text-muted-foreground space-y-1">
-                          <li>• Only <span className="text-primary">Fabled+</span> quality gear can be rerolled</li>
+                          <li>• Only <span className="text-primary">Fabled+</span> quality gear can be rerolled (<span className="text-red-500 font-semibold">Primal</span> gear is priority, Save your Umbra Essence)</li>
                           <li>• Rerolling uses <span className="text-offensive">Umbra Essence</span></li>
                           <li>• Salvaging rerolled gear gives partial Essence refund</li>
                           <li>• Rerolls are random — not guaranteed to improve!</li>
@@ -74,6 +73,16 @@ export default function Index() {
                           <li>• <span className="text-skill">5th Slot (Cuirass/Greaves):</span> Control Skill stats</li>
                           <li>• <span className="text-skill">5th Slot (Boots/Belt):</span> Core Skill stats</li>
                           <li>• <span className="text-offensive">5th Slot (Weapon/Jewelry):</span> Crit or Additional Damage</li>
+                        </ul>
+                      </div>
+
+                      <div className="p-3 rounded-lg bg-gold/5 border border-gold/20">
+                        <p className="font-semibold text-sm text-foreground mb-1">Pro Tips</p>
+                        <ul className="text-sm text-muted-foreground space-y-1">
+                          <li>• <strong>Priority Order:</strong> Offensive (5th slot) → Defensive (4th slot) → Skill-specific stats</li>
+                          <li>• <strong>Weapon First:</strong> Weapon Crit is often the highest priority for damage builds</li>
+                          <li>• <strong>Resource Management:</strong> Don't burn all Essence chasing perfect rolls — 8-10% is often good enough</li>
+                          <li>• <strong>End-Game Only:</strong> Save your Umbra Essence for <span className="text-red-500 font-semibold">Primal</span> gear you'll use long-term</li>
                         </ul>
                       </div>
                     </div>
@@ -93,27 +102,6 @@ export default function Index() {
             </Accordion>
           </div>
 
-          {/* Pro Tips */}
-          <div className="mt-8 space-y-4">
-            <h3 className="font-cinzel text-xl text-foreground flex items-center gap-2">
-              <Lightbulb className="w-5 h-5 text-[hsl(var(--gold))]" />
-              Pro Tips
-            </h3>
-            <div className="grid gap-3">
-              <ProTip>
-                <strong>Priority Order:</strong> Offensive (5th slot) → Defensive (4th slot) → Skill-specific stats
-              </ProTip>
-              <ProTip>
-                <strong>Weapon First:</strong> Weapon Critical is often the highest priority for damage builds
-              </ProTip>
-              <ProTip>
-                <strong>Resource Management:</strong> Don't burn all Essence chasing perfect rolls — 8-10% is often good enough
-              </ProTip>
-              <ProTip>
-                <strong>End-Game Only:</strong> Save your Umbra Essence for Primal gear you'll use long-term
-              </ProTip>
-            </div>
-          </div>
         </div>
       </div>
 
