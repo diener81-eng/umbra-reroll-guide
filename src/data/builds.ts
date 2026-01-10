@@ -31,10 +31,11 @@ export interface Build {
 
 // Default slot 5 priorities for most builds
 const defaultSlot5: ArmorSlot5Priority = {
-  helmPauldron: ['Basic Skill Dmg Up', 'Basic Skill Haste'],
-  beltBoots: ['Core Skill Dmg Up', 'Core Skill Haste'],
+  helmPauldron: ['Basic Skill Haste', 'Basic Skill Dmg Up'],
+  beltBoots: ['Core Skill Dmg Up', 'Core Skill Haste'], // keep if you prefer dmg > haste here
   cuirassGreaves: ['Ultimate CD', 'Ultimate Haste'],
 };
+
 
 // Ancient God builds prioritize Ultimate CD
 const ancientGodSlot5: ArmorSlot5Priority = {
@@ -58,8 +59,8 @@ export const arcanistBuilds: Build[] = [
     ultimateSkill: 'Hail',
     statPriority: {
       groupA: ['Elemental Damage', 'Add Dmg', 'Add Dmg Chance', 'Core Skill Dmg', 'Crit Chance', 'Crit Damage'],
-      groupB: ['Elemental Damage', 'Add Dmg', 'Add Dmg Chance', 'Core Skill Dmg', 'Crit Chance', 'Crit Damage'],
-      groupC: ['Elemental Damage', 'Add Dmg', 'Add Dmg Chance', 'Core Skill Dmg', 'Crit Chance', 'Crit Damage'],
+      groupB: ['Elemental Damage', 'Add Dmg', 'Add Dmg Chance', 'Core Skill Dmg', 'Crit Damage'],
+      groupC: [],
       slot4: ['Evasion'],
       slot5: defaultSlot5,
       defense: standardDefense
@@ -74,9 +75,9 @@ export const arcanistBuilds: Build[] = [
     ultimateSkill: 'Hail',
     isAncientGod: true,
     statPriority: {
-      groupA: ['Hail CD', 'Elemental Damage', 'Add Dmg', 'Add Dmg Chance', 'Core Skill Dmg'],
-      groupB: ['Hail CD', 'Elemental Damage', 'Add Dmg', 'Add Dmg Chance', 'Core Skill Dmg'],
-      groupC: ['Hail CD', 'Elemental Damage', 'Add Dmg', 'Add Dmg Chance', 'Core Skill Dmg'],
+      groupA: ['Elemental Damage', 'Add Dmg', 'Add Dmg Chance', 'Core Skill Dmg', 'Crit Damage'], // and Crit Chance can be included if you want slot5 groupA
+      groupB: ['Elemental Damage', 'Add Dmg', 'Add Dmg Chance', 'Core Skill Dmg', 'Crit Damage'],
+      groupC: [],
       slot4: ['Evasion'],
       slot5: ancientGodSlot5,
       defense: standardDefense
@@ -91,8 +92,8 @@ export const arcanistBuilds: Build[] = [
     ultimateSkill: 'Aether Form',
     statPriority: {
       groupA: ['Elemental Damage', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Dmg Over Time'],
-      groupB: ['Elemental Damage', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Dmg Over Time'],
-      groupC: ['Elemental Damage', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Dmg Over Time'],
+      groupB: ['Elemental Damage', 'Crit Damage', 'Core Skill Dmg', 'Dmg Over Time'],
+      groupC: [],
       slot4: ['Evasion'],
       slot5: defaultSlot5,
       defense: standardDefense
@@ -108,8 +109,8 @@ export const arcanistBuilds: Build[] = [
     isPvP: true,
     statPriority: {
       groupA: ['Elemental Damage', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Dmg Over Time'],
-      groupB: ['Elemental Damage', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Dmg Over Time'],
-      groupC: ['Elemental Damage', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Dmg Over Time'],
+      groupB: ['Elemental Damage', 'Crit Damage', 'Core Skill Dmg', 'Dmg Over Time'],
+      groupC: [],
       slot4: ['Evasion'], // TOP priority for PvP
       slot5: defaultSlot5,
       defense: pvpDefense
@@ -124,9 +125,9 @@ export const arcanistBuilds: Build[] = [
     ultimateSkill: 'Hail',
     isAncientGod: true,
     statPriority: {
-      groupA: ['Hail CD', 'Elemental Damage', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg'],
-      groupB: ['Hail CD', 'Elemental Damage', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg'],
-      groupC: ['Hail CD', 'Elemental Damage', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg'],
+      groupA: ['Elemental Damage', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg'],
+      groupB: ['Elemental Damage', 'Crit Damage', 'Core Skill Dmg'],
+      groupC: [],
       slot4: ['Evasion'],
       slot5: ancientGodSlot5,
       defense: standardDefense
@@ -141,9 +142,9 @@ export const arcanistBuilds: Build[] = [
     ultimateSkill: 'Hail',
     isAncientGod: true,
     statPriority: {
-      groupA: ['Hail CD', 'Elemental Damage', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg'],
-      groupB: ['Hail CD', 'Elemental Damage', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg'],
-      groupC: ['Hail CD', 'Elemental Damage', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg'],
+      groupA: ['Elemental Damage', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg'],
+      groupB: ['Elemental Damage', 'Crit Damage', 'Core Skill Dmg'],
+      groupC: [],
       slot4: ['Evasion'],
       slot5: ancientGodSlot5,
       defense: standardDefense
@@ -160,8 +161,8 @@ export const arcanistBuilds: Build[] = [
     ultimateSkill: 'Aether Form',
     statPriority: {
       groupA: ['Elemental Damage', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg'],
-      groupB: ['Elemental Damage', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg'],
-      groupC: ['Elemental Damage', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg'],
+      groupB: ['Elemental Damage', 'Crit Damage', 'Core Skill Dmg'],
+      groupC: [],
       slot4: ['Evasion'],
       slot5: defaultSlot5,
       defense: standardDefense
@@ -177,8 +178,8 @@ export const arcanistBuilds: Build[] = [
     isPvP: true,
     statPriority: {
       groupA: ['Elemental Damage', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg'],
-      groupB: ['Elemental Damage', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg'],
-      groupC: ['Elemental Damage', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg'],
+      groupB: ['Elemental Damage', 'Crit Damage', 'Core Skill Dmg'],
+      groupC: [],
       slot4: ['Evasion'], // TOP priority for PvP
       slot5: defaultSlot5,
       defense: pvpDefense
@@ -193,8 +194,8 @@ export const arcanistBuilds: Build[] = [
     ultimateSkill: 'Aether Form',
     statPriority: {
       groupA: ['Elemental Damage', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Dmg Over Time'],
-      groupB: ['Elemental Damage', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Dmg Over Time'],
-      groupC: ['Elemental Damage', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Dmg Over Time'],
+      groupB: ['Elemental Damage', 'Crit Damage', 'Core Skill Dmg', 'Dmg Over Time'],
+      groupC: [],
       slot4: ['Evasion'],
       slot5: defaultSlot5,
       defense: standardDefense
@@ -209,8 +210,8 @@ export const arcanistBuilds: Build[] = [
     ultimateSkill: 'Aether Form',
     statPriority: {
       groupA: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupB: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupC: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupB: ['Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupC: [],
       slot4: ['Evasion'],
       slot5: defaultSlot5,
       defense: standardDefense
@@ -226,8 +227,8 @@ export const arcanistBuilds: Build[] = [
     isPvP: true,
     statPriority: {
       groupA: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupB: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupC: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupB: ['Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupC: [],
       slot4: ['Evasion'], // TOP priority for PvP
       slot5: defaultSlot5,
       defense: pvpDefense
@@ -244,8 +245,8 @@ export const arcanistBuilds: Build[] = [
     ultimateSkill: 'Hail',
     statPriority: {
       groupA: ['Add Dmg', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupB: ['Add Dmg', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupC: ['Add Dmg', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupB: ['Add Dmg', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupC: [],
       slot4: ['Evasion'],
       slot5: defaultSlot5,
       defense: standardDefense
@@ -261,8 +262,8 @@ export const arcanistBuilds: Build[] = [
     isPvP: true,
     statPriority: {
       groupA: ['Add Dmg', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupB: ['Add Dmg', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupC: ['Add Dmg', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupB: ['Add Dmg', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupC: [],
       slot4: ['Evasion'], // TOP priority for PvP
       slot5: defaultSlot5,
       defense: pvpDefense
@@ -277,8 +278,8 @@ export const arcanistBuilds: Build[] = [
     ultimateSkill: 'Hail',
     statPriority: {
       groupA: ['Add Dmg', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupB: ['Add Dmg', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupC: ['Add Dmg', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupB: ['Add Dmg', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupC: [],
       slot4: ['Evasion'],
       slot5: defaultSlot5,
       defense: standardDefense
@@ -293,8 +294,8 @@ export const arcanistBuilds: Build[] = [
     ultimateSkill: 'Aether Form',
     statPriority: {
       groupA: ['Add Dmg Chance', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupB: ['Add Dmg Chance', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupC: ['Add Dmg Chance', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupB: ['Add Dmg Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupC: [],
       slot4: ['Evasion'],
       slot5: defaultSlot5,
       defense: standardDefense
@@ -313,8 +314,8 @@ export const savageBuilds: Build[] = [
     ultimateSkill: 'Ragnarok',
     statPriority: {
       groupA: ['Add Dmg Chance', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupB: ['Add Dmg Chance', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupC: ['Add Dmg Chance', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupB: ['Add Dmg Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupC: [],
       slot4: ['Evasion'],
       slot5: defaultSlot5,
       defense: standardDefense
@@ -330,8 +331,8 @@ export const savageBuilds: Build[] = [
     isPvP: true,
     statPriority: {
       groupA: ['Add Dmg Chance', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupB: ['Add Dmg Chance', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupC: ['Add Dmg Chance', 'Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupB: ['Add Dmg Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupC: [],
       slot4: ['Evasion'], // TOP priority for PvP
       slot5: defaultSlot5,
       defense: pvpDefense
@@ -346,8 +347,8 @@ export const savageBuilds: Build[] = [
     ultimateSkill: 'Ragnarok',
     statPriority: {
       groupA: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupB: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupC: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupB: ['Crit Chance', 'Core Skill Dmg', 'Elemental Damage'],
+      groupC: [],
       slot4: ['Evasion'],
       slot5: defaultSlot5,
       defense: standardDefense
@@ -363,8 +364,8 @@ export const savageBuilds: Build[] = [
     isPvP: true,
     statPriority: {
       groupA: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupB: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupC: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupB: ['Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupC: [],
       slot4: ['Evasion'], // TOP priority for PvP
       slot5: defaultSlot5,
       defense: pvpDefense
@@ -380,7 +381,7 @@ export const savageBuilds: Build[] = [
     statPriority: {
       groupA: ['Add Dmg Chance', 'Add Dmg', 'Core Skill Dmg', 'Physical Damage'],
       groupB: ['Add Dmg Chance', 'Add Dmg', 'Core Skill Dmg', 'Physical Damage'],
-      groupC: ['Add Dmg Chance', 'Add Dmg', 'Core Skill Dmg', 'Physical Damage'],
+      groupC: [],
       slot4: ['Evasion'],
       slot5: defaultSlot5,
       defense: standardDefense
@@ -397,7 +398,7 @@ export const savageBuilds: Build[] = [
     statPriority: {
       groupA: ['Add Dmg Chance', 'Add Dmg', 'Core Skill Dmg', 'Physical Damage'],
       groupB: ['Add Dmg Chance', 'Add Dmg', 'Core Skill Dmg', 'Physical Damage'],
-      groupC: ['Add Dmg Chance', 'Add Dmg', 'Core Skill Dmg', 'Physical Damage'],
+      groupC: [],
       slot4: ['Evasion'], // TOP priority for PvP
       slot5: defaultSlot5,
       defense: pvpDefense
@@ -414,8 +415,8 @@ export const savageBuilds: Build[] = [
     ultimateSkill: 'Ragnarok',
     statPriority: {
       groupA: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Physical Damage', 'Elemental Damage'],
-      groupB: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Physical Damage', 'Elemental Damage'],
-      groupC: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Physical Damage', 'Elemental Damage'],
+      groupB: ['Crit Damage', 'Core Skill Dmg', 'Physical Damage', 'Elemental Damage'],
+      groupC: [],
       slot4: ['Evasion'],
       slot5: defaultSlot5,
       defense: standardDefense
@@ -431,8 +432,8 @@ export const savageBuilds: Build[] = [
     isPvP: true,
     statPriority: {
       groupA: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Physical Damage', 'Elemental Damage'],
-      groupB: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Physical Damage', 'Elemental Damage'],
-      groupC: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Physical Damage', 'Elemental Damage'],
+      groupB: ['Crit Damage', 'Core Skill Dmg', 'Physical Damage', 'Elemental Damage'],
+      groupC: [],
       slot4: ['Evasion'], // TOP priority for PvP
       slot5: defaultSlot5,
       defense: pvpDefense
@@ -447,8 +448,8 @@ export const savageBuilds: Build[] = [
     ultimateSkill: 'Ragnarok',
     statPriority: {
       groupA: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupB: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupC: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupB: ['Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupC: [],
       slot4: ['Evasion'],
       slot5: defaultSlot5,
       defense: standardDefense
@@ -464,7 +465,7 @@ export const savageBuilds: Build[] = [
     statPriority: {
       groupA: ['Add Dmg Chance', 'Add Dmg', 'Core Skill Dmg', 'Physical Damage'],
       groupB: ['Add Dmg Chance', 'Add Dmg', 'Core Skill Dmg', 'Physical Damage'],
-      groupC: ['Add Dmg Chance', 'Add Dmg', 'Core Skill Dmg', 'Physical Damage'],
+      groupC: [],
       slot4: ['Evasion'],
       slot5: defaultSlot5,
       defense: standardDefense
@@ -481,8 +482,8 @@ export const savageBuilds: Build[] = [
     ultimateSkill: 'Ragnarok',
     statPriority: {
       groupA: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupB: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupC: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupB: ['Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupC: [],
       slot4: ['Evasion'],
       slot5: defaultSlot5,
       defense: standardDefense
@@ -498,8 +499,8 @@ export const savageBuilds: Build[] = [
     isPvP: true,
     statPriority: {
       groupA: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupB: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupC: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupB: ['Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupC: [],
       slot4: ['Evasion'], // TOP priority for PvP
       slot5: defaultSlot5,
       defense: pvpDefense
@@ -514,8 +515,8 @@ export const savageBuilds: Build[] = [
     ultimateSkill: 'Savage',
     statPriority: {
       groupA: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupB: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupC: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupB: ['Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupC: [],
       slot4: ['Evasion'],
       slot5: defaultSlot5,
       defense: standardDefense
@@ -530,8 +531,8 @@ export const savageBuilds: Build[] = [
     ultimateSkill: 'Ragnarok',
     statPriority: {
       groupA: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupB: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupC: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupB: ['Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupC: [],
       slot4: ['Evasion'],
       slot5: defaultSlot5,
       defense: standardDefense
@@ -547,8 +548,8 @@ export const savageBuilds: Build[] = [
     isPvP: true,
     statPriority: {
       groupA: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupB: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupC: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupB: ['Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
+      groupC: [],
       slot4: ['Evasion'], // TOP priority for PvP
       slot5: defaultSlot5,
       defense: pvpDefense
