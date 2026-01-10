@@ -103,6 +103,9 @@ export default function RerollAdvisor() {
   const armorPieces = gearPieces.filter(g => g.category === 'armor');
   const offensivePieces = gearPieces.filter(g => g.category === 'offensive');
   const builds = getBuildsByClass(selectedClass);
+  
+  const isAncientGodSelected = isAncientGodBuild(selectedBuild);
+  const isUltimateGear = (gearId: string) => gearId === 'cuirass' || gearId === 'greaves';
 
   return (
     <div className="space-y-8">
@@ -134,6 +137,7 @@ export default function RerollAdvisor() {
             {armorPieces.map((gear) => {
               const Icon = iconMap[gear.icon] || Circle;
               const isSelected = selectedGear?.id === gear.id;
+              const isHighlighted = isAncientGodSelected && isUltimateGear(gear.id);
               return (
                 <button
                   key={gear.id}
@@ -142,11 +146,13 @@ export default function RerollAdvisor() {
                     "flex flex-col items-center gap-2 p-3 rounded-lg border transition-all duration-200",
                     isSelected
                       ? "border-skill bg-skill/10 glow-skill"
-                      : "border-border/50 bg-card/50 hover:border-skill/50 hover:bg-skill/5"
+                      : isHighlighted
+                        ? "border-primary bg-primary/10 ring-1 ring-primary/50"
+                        : "border-border/50 bg-card/50 hover:border-skill/50 hover:bg-skill/5"
                   )}
                 >
-                  <Icon className={cn("w-6 h-6", isSelected ? "text-skill" : "text-muted-foreground")} />
-                  <span className={cn("text-xs font-medium", isSelected ? "text-skill" : "text-foreground")}>
+                  <Icon className={cn("w-6 h-6", isSelected ? "text-skill" : isHighlighted ? "text-primary" : "text-muted-foreground")} />
+                  <span className={cn("text-xs font-medium", isSelected ? "text-skill" : isHighlighted ? "text-primary" : "text-foreground")}>
                     {gear.name}
                   </span>
                 </button>
