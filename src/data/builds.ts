@@ -40,5 +40,6 @@ export const savageBuilds: Build[] = [
 export const allBuilds = [...arcanistBuilds, ...savageBuilds];
 
 export function getBuildsByClass(buildClass: BuildClass): Build[] {
-  return buildClass === 'Arcanist' ? arcanistBuilds : savageBuilds;
+  const builds = buildClass === 'Arcanist' ? arcanistBuilds : savageBuilds;
+  return [...builds].sort((a, b) => a.name.localeCompare(b.name));
 }

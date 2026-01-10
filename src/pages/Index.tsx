@@ -19,7 +19,7 @@ export default function Index() {
           <div className="text-center max-w-3xl mx-auto">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
               <Sparkles className="w-4 h-4 text-primary" />
-              <span className="text-sm text-primary font-medium">Lootborn Warriors</span>
+              <span className="text-sm text-primary font-medium">LootFiend</span>
             </div>
             
             <h1 className="font-cinzel text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
@@ -30,7 +30,6 @@ export default function Index() {
             
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Select your gear and build to get personalized affix reroll recommendations.
-              Optimize your Umbra Essence spending for maximum power.
             </p>
           </div>
         </div>
@@ -39,11 +38,8 @@ export default function Index() {
       {/* Main Content */}
       <div className="container mx-auto px-4 pb-16">
         <div className="max-w-3xl mx-auto">
-          {/* Interactive Advisor */}
-          <RerollAdvisor />
-          
-          {/* Quick Reference */}
-          <div className="mt-12">
+          {/* Quick Reference - at the top */}
+          <div className="mb-8">
             <Accordion type="single" collapsible className="card-game">
               <AccordionItem value="reference" className="border-none">
                 <AccordionTrigger className="px-6 py-4 hover:no-underline">
@@ -79,10 +75,10 @@ export default function Index() {
                       <div className="p-3 rounded-lg bg-gold/5 border border-gold/20">
                         <p className="font-semibold text-sm text-foreground mb-1">Pro Tips</p>
                         <ul className="text-sm text-muted-foreground space-y-1">
-                          <li>• <strong>Priority Order:</strong> Offensive (5th slot) → Defensive (4th slot) → Skill-specific stats</li>
-                          <li>• <strong>Weapon First:</strong> Weapon Crit is often the highest priority for damage builds</li>
-                          <li>• <strong>Resource Management:</strong> Don't burn all Essence chasing perfect rolls — 8-10% is often good enough</li>
-                          <li>• <strong>End-Game Only:</strong> Save your Umbra Essence for <span className="text-red-500 font-semibold">Primal</span> gear you'll use long-term</li>
+                          <li>• <strong className="text-foreground">Priority Order:</strong> Offensive (5th slot) → Defensive (4th slot) → Skill-specific stats</li>
+                          <li>• <strong className="text-foreground">Weapon First:</strong> Weapon Crit is often the highest priority for damage builds</li>
+                          <li>• <strong className="text-foreground">Resource Management:</strong> Don't burn all Essence chasing perfect rolls — 8-10% is often good enough</li>
+                          <li>• <strong className="text-foreground">End-Game Only:</strong> Save your Umbra Essence for <span className="text-red-500 font-semibold">Primal</span> gear you'll use long-term</li>
                         </ul>
                       </div>
                     </div>
@@ -102,6 +98,8 @@ export default function Index() {
             </Accordion>
           </div>
 
+          {/* Interactive Advisor */}
+          <RerollAdvisor />
         </div>
       </div>
 
@@ -117,12 +115,12 @@ export default function Index() {
                 rel="noopener noreferrer"
                 className="text-primary hover:underline inline-flex items-center gap-1"
               >
-                Lootborn Warriors Wiki
+                LootFiend Wiki
                 <ExternalLink className="w-3 h-3" />
               </a>
             </p>
             <p className="text-xs text-muted-foreground/70">
-              Community-driven resource for Lootborn Warriors players
+              Community-driven resource for LootFiend players
             </p>
           </div>
         </div>
