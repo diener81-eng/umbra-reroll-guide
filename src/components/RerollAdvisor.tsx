@@ -103,10 +103,23 @@ if (gear.category === 'armor') {
 
   result.priorityStats = priorityStats
     .map(stat => formatSkillStat(stat, build))
+    .filter(stat => !isSlot5SkillStat(stat, build))
     .filter(stat => validArmorStats.includes(stat));
-}else {
-      result.priorityStats = priorityStats.map(stat => formatSkillStat(stat, build));
-    }
+
+} else if (gear.category === 'offensive') {
+
+  // remove Crit Chance from other slots (it's already shown in slot 5)
+  result.priorityStats = priorityStats
+    .map(stat => formatSkillStat(stat, build))
+    .filter(stat => stat !== 'Crit Chance');
+
+} else {
+
+  // accessories
+  result.priorityStats = priorityStats.map(stat => formatSkillStat(stat, build));
+
+}
+
   }
   
   // Slot 4 (armor only) - Evasion
@@ -126,10 +139,16 @@ if (gear.category === 'armor') {
   }
   
   // Offensive gear (Weapon & Jewelry) - Crit Chance is the priority, not Thorn
-if (gear.category === 'offensive') {
+if (gear.category === 'offensive' && build) {
   result.offensive5thSlot = ['Crit Chance'];
-  result.offensiveAnySlot = offensiveSlotConfig.anySlot;
+
+  result.priorityStats = build.statPriority.groupA
+    .map(stat => formatSkillStat(stat, build))
+    .filter(stat => stat !== 'Crit Chance'); // 👈 REMOVE crit from other slots
+
+  return result;
 }
+
 
   
   // Accessories (Gauntlets, Bracers) - all slots can have any stat
