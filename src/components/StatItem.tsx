@@ -11,7 +11,7 @@ const statDescriptions: Record<string, { summary: string; detail: string }> = {
   },
   
   // Offensive stats
-  'Critical': {
+  'Crit Chance': {
     summary: 'Chance to critical hit',
     detail: 'Your chance to land a critical hit. When you crit, your damage is multiplied by your Crit Dmg. The Crit system has 4 interacting stats: Crit vs Crit Deflect determines IF you crit, while Crit Dmg vs Crit Dmg Res. determines HOW MUCH extra damage the crit deals.'
   },

@@ -11,9 +11,10 @@ export interface Build {
 
 export const arcanistBuilds: Build[] = [
   { name: 'Iceflame', class: 'Arcanist', coreSkill: 'Fireball', basicSkill: 'Flame Wave', controlSkills: ['Flash', 'Frost Shield'], ultimateSkill: 'Hail' },
+  { name: 'Iceflame Ancient God', class: 'Arcanist', coreSkill: 'Fireball', basicSkill: 'Flame Wave', controlSkills: ['Flash', 'Frost Shield'], ultimateSkill: 'Hail' },
   { name: 'Pyroblast', class: 'Arcanist', coreSkill: 'Fireball', basicSkill: 'Flame Wave', controlSkills: ['Flash', 'Frost Shield'], ultimateSkill: 'Aether Form' },
   { name: 'Pyroblast Ancient God', class: 'Arcanist', coreSkill: 'Fireball', basicSkill: 'Lightning Whip', controlSkills: ['Flash', 'Frost Shield'], ultimateSkill: 'Hail' },
-  { name: 'Jolt', class: 'Arcanist', coreSkill: 'Fireball', basicSkill: 'Flame Wave', controlSkills: ['Flash', 'Frost Shield'], ultimateSkill: 'Hail' },
+  { name: 'Jolt Ancient God', class: 'Arcanist', coreSkill: 'Fireball', basicSkill: 'Flame Wave', controlSkills: ['Flash', 'Frost Shield'], ultimateSkill: 'Hail' },
   { name: 'Ice Sword', class: 'Arcanist', coreSkill: 'Lightning Punch', basicSkill: 'Flame Wave', controlSkills: ['Flash', 'Frost Shield'], ultimateSkill: 'Aether Form' },
   { name: 'Ice Sword PVP', class: 'Arcanist', coreSkill: 'Lightning Punch', basicSkill: 'Lightning Whip', controlSkills: ['Flash', 'Frost Shield'], ultimateSkill: 'Hail' },
   { name: 'Flame Bow', class: 'Arcanist', coreSkill: 'Lightning Punch', basicSkill: 'Flame Wave', controlSkills: ['Flash', 'Infernal Bloom'], ultimateSkill: 'Aether Form' },
