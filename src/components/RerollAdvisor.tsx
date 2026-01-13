@@ -367,7 +367,7 @@ export default function RerollAdvisor() {
             {selectedBuild.isPvP && <span className="ml-2 text-xs bg-destructive/20 text-destructive px-2 py-0.5 rounded-full">PvP</span>}
             {selectedBuild.isAncientGod && <span className="ml-2 text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full">Ultimate Focus</span>}
           </p>
-
+ 
           <div className="space-y-4">
             {/* ARMOR: Slot 4 */}
             {selectedGear.category === 'armor' && recommendations.slot4Stats && (
