@@ -2,19 +2,19 @@ export type BuildClass = 'Arcanist' | 'Savage';
 
 // Slot 5 priorities by armor piece type
 export interface ArmorSlot5Priority {
-  helmPauldron: string[];   // Basic skill stats
-  beltBoots: string[];      // Core skill stats
+  helmPauldron: string[]; // Basic skill stats
+  beltBoots: string[]; // Core skill stats
   cuirassGreaves: string[]; // Ultimate skill stats
 }
 
 // Group-based stat priorities
 export interface BuildStatPriority {
-  groupA: string[];          // Weapon + Necklace + Amulet + Ring
-  groupB: string[];          // Gauntlets + Bracers
-  groupC: string[];          // (Not used for armor other slots; armor uses defense list)
-  slot4: string[];           // Armor 4th slot (Evasion)
+  groupA: string[]; // Weapon + Necklace + Amulet + Ring
+  groupB: string[]; // Gauntlets + Bracers
+  groupC: string[]; // (unused for armor other-slots; kept for compatibility)
+  slot4: string[]; // Armor 4th slot
   slot5: ArmorSlot5Priority; // Armor 5th slot by piece type
-  defense: string[];         // Armor other slots priority
+  defense: string[]; // Defensive priorities
 }
 
 export interface Build {
@@ -29,43 +29,30 @@ export interface Build {
   isAncientGod?: boolean;
 }
 
-// --- Slot 5 templates ---
-const slot5ForUltimate = (ultimateSkill: string): ArmorSlot5Priority => {
-  // Aether Form = Dmg Up (no CD/haste)
-  if (ultimateSkill === 'Aether Form') {
-    return {
-      helmPauldron: ['Basic Skill Dmg Up', 'Basic Skill Haste'],
-      beltBoots: ['Core Skill Dmg Up', 'Core Skill Haste'],
-      cuirassGreaves: ['Aether Form Damage Up'],
-    };
-  }
-
-  // Default: ultimate only has CD (no haste)
-  return {
-    helmPauldron: ['Basic Skill Dmg Up', 'Basic Skill Haste'],
-    beltBoots: ['Core Skill Dmg Up', 'Core Skill Haste'],
-    cuirassGreaves: ['Ultimate CD'],
-  };
-};
-
-// Ancient God builds prioritize ultimate CD (still CD-only)
-const ancientGodSlot5 = (ultimateSkill: string): ArmorSlot5Priority => {
-  // If AG build uses Aether Form, still only Dmg Up exists
-  if (ultimateSkill === 'Aether Form') return slot5ForUltimate(ultimateSkill);
-
-  return {
-    helmPauldron: ['Basic Skill Dmg Up', 'Basic Skill Haste'],
-    beltBoots: ['Core Skill Dmg Up', 'Core Skill Haste'],
-    cuirassGreaves: ['Ultimate CD'],
-  };
-};
-
-// Defense priorities
+// Standard defense priorities
 const standardDefense = ['Physical Res.', 'Elemental Res.', 'Evasion', 'Heal on Hit'];
 const pvpDefense = ['Evasion', 'Physical Res.', 'Elemental Res.', 'Heal on Hit'];
 
+// Default slot 5 templates
+const baseSlot5: ArmorSlot5Priority = {
+  helmPauldron: ['Basic Skill Dmg Up', 'Basic Skill Haste'],
+  beltBoots: ['Core Skill Dmg Up', 'Core Skill Haste'],
+  cuirassGreaves: ['Ultimate CD'], // default: only CD (no haste)
+};
+
+// If Ultimate is Aether Form, it has Dmg Up instead of CD/Haste.
+// We keep it as a TEMPLATE string so the UI can display "Aether Form Dmg Up" automatically.
+const aetherFormSlot5: ArmorSlot5Priority = {
+  helmPauldron: ['Basic Skill Dmg Up', 'Basic Skill Haste'],
+  beltBoots: ['Core Skill Dmg Up', 'Core Skill Haste'],
+  cuirassGreaves: ['Ultimate Dmg Up'],
+};
+
+function slot5ForUltimate(ultimateSkill: string): ArmorSlot5Priority {
+  return ultimateSkill === 'Aether Form' ? aetherFormSlot5 : baseSlot5;
+}
+
 export const arcanistBuilds: Build[] = [
-  // ===== FIREBALL CORE BUILDS =====
   {
     name: 'Iceflame',
     class: 'Arcanist',
@@ -95,7 +82,7 @@ export const arcanistBuilds: Build[] = [
       groupB: ['Elemental Damage', 'Add Dmg', 'Add Dmg Chance', 'Core Skill Dmg', 'Crit Damage'],
       groupC: [],
       slot4: ['Evasion'],
-      slot5: ancientGodSlot5('Hail'),
+      slot5: slot5ForUltimate('Hail'),
       defense: standardDefense,
     },
   },
@@ -145,7 +132,7 @@ export const arcanistBuilds: Build[] = [
       groupB: ['Elemental Damage', 'Crit Damage', 'Core Skill Dmg'],
       groupC: [],
       slot4: ['Evasion'],
-      slot5: ancientGodSlot5('Hail'),
+      slot5: slot5ForUltimate('Hail'),
       defense: standardDefense,
     },
   },
@@ -162,12 +149,12 @@ export const arcanistBuilds: Build[] = [
       groupB: ['Elemental Damage', 'Crit Damage', 'Core Skill Dmg'],
       groupC: [],
       slot4: ['Evasion'],
-      slot5: ancientGodSlot5('Hail'),
+      slot5: slot5ForUltimate('Hail'),
       defense: standardDefense,
     },
   },
 
-  // ===== LIGHTNING PUNCH CORE BUILDS =====
+  // Lightning Punch
   {
     name: 'Ice Sword',
     class: 'Arcanist',
@@ -251,7 +238,7 @@ export const arcanistBuilds: Build[] = [
     },
   },
 
-  // ===== ICE RAY CORE BUILDS =====
+  // Ice Ray
   {
     name: 'Rimebite',
     class: 'Arcanist',
@@ -320,7 +307,7 @@ export const arcanistBuilds: Build[] = [
 ];
 
 export const savageBuilds: Build[] = [
-  // ===== BLADESTORM CORE BUILDS =====
+  // Bladestorm
   {
     name: 'Thunder',
     class: 'Savage',
@@ -354,174 +341,8 @@ export const savageBuilds: Build[] = [
       defense: pvpDefense,
     },
   },
-  {
-    name: 'Fiery Rage',
-    class: 'Savage',
-    coreSkill: 'Bladestorm',
-    basicSkill: 'Bloodlust',
-    controlSkills: ['Raze', 'Rampage'],
-    ultimateSkill: 'Ragnarok',
-    statPriority: {
-      groupA: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupB: ['Crit Chance', 'Core Skill Dmg', 'Elemental Damage'],
-      groupC: [],
-      slot4: ['Evasion'],
-      slot5: slot5ForUltimate('Ragnarok'),
-      defense: standardDefense,
-    },
-  },
-  {
-    name: 'Fiery Rage PVP',
-    class: 'Savage',
-    coreSkill: 'Bladestorm',
-    basicSkill: 'Bloodlust',
-    controlSkills: ['Raze', 'Rampage'],
-    ultimateSkill: 'Ragnarok',
-    isPvP: true,
-    statPriority: {
-      groupA: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupB: ['Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupC: [],
-      slot4: ['Evasion'],
-      slot5: slot5ForUltimate('Ragnarok'),
-      defense: pvpDefense,
-    },
-  },
-  {
-    name: 'Thorn',
-    class: 'Savage',
-    coreSkill: 'Bladestorm',
-    basicSkill: 'Bloodlust',
-    controlSkills: ['Raze', 'Rampage'],
-    ultimateSkill: 'Ragnarok',
-    statPriority: {
-      groupA: ['Add Dmg Chance', 'Add Dmg', 'Core Skill Dmg', 'Physical Damage'],
-      groupB: ['Add Dmg Chance', 'Add Dmg', 'Core Skill Dmg', 'Physical Damage'],
-      groupC: [],
-      slot4: ['Evasion'],
-      slot5: slot5ForUltimate('Ragnarok'),
-      defense: standardDefense,
-    },
-  },
-  {
-    name: 'Thorn PVP',
-    class: 'Savage',
-    coreSkill: 'Bladestorm',
-    basicSkill: 'Bloodlust',
-    controlSkills: ['Skybound Strike', 'Rampage'],
-    ultimateSkill: 'Ragnarok',
-    isPvP: true,
-    statPriority: {
-      groupA: ['Add Dmg Chance', 'Add Dmg', 'Core Skill Dmg', 'Physical Damage'],
-      groupB: ['Add Dmg Chance', 'Add Dmg', 'Core Skill Dmg', 'Physical Damage'],
-      groupC: [],
-      slot4: ['Evasion'],
-      slot5: slot5ForUltimate('Ragnarok'),
-      defense: pvpDefense,
-    },
-  },
 
-  // ===== SWIPE CORE BUILDS =====
-  {
-    name: 'Blazefury',
-    class: 'Savage',
-    coreSkill: 'Swipe',
-    basicSkill: 'Strike',
-    controlSkills: ['Raze', 'Rampage'],
-    ultimateSkill: 'Ragnarok',
-    statPriority: {
-      groupA: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Physical Damage', 'Elemental Damage'],
-      groupB: ['Crit Damage', 'Core Skill Dmg', 'Physical Damage', 'Elemental Damage'],
-      groupC: [],
-      slot4: ['Evasion'],
-      slot5: slot5ForUltimate('Ragnarok'),
-      defense: standardDefense,
-    },
-  },
-  {
-    name: 'Blazefury PVP',
-    class: 'Savage',
-    coreSkill: 'Swipe',
-    basicSkill: 'Strike',
-    controlSkills: ['Raze', 'Rampage'],
-    ultimateSkill: 'Ragnarok',
-    isPvP: true,
-    statPriority: {
-      groupA: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Physical Damage', 'Elemental Damage'],
-      groupB: ['Crit Damage', 'Core Skill Dmg', 'Physical Damage', 'Elemental Damage'],
-      groupC: [],
-      slot4: ['Evasion'],
-      slot5: slot5ForUltimate('Ragnarok'),
-      defense: pvpDefense,
-    },
-  },
-  {
-    name: 'Wild Spark',
-    class: 'Savage',
-    coreSkill: 'Swipe',
-    basicSkill: 'Strike',
-    controlSkills: ['Raze', 'Rampage'],
-    ultimateSkill: 'Ragnarok',
-    statPriority: {
-      groupA: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupB: ['Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupC: [],
-      slot4: ['Evasion'],
-      slot5: slot5ForUltimate('Ragnarok'),
-      defense: standardDefense,
-    },
-  },
-  {
-    name: 'Ritual Blade',
-    class: 'Savage',
-    coreSkill: 'Swipe',
-    basicSkill: 'Strike',
-    controlSkills: ['Raze', 'Rampage'],
-    ultimateSkill: 'Ragnarok',
-    statPriority: {
-      groupA: ['Add Dmg Chance', 'Add Dmg', 'Core Skill Dmg', 'Physical Damage'],
-      groupB: ['Add Dmg Chance', 'Add Dmg', 'Core Skill Dmg', 'Physical Damage'],
-      groupC: [],
-      slot4: ['Evasion'],
-      slot5: slot5ForUltimate('Ragnarok'),
-      defense: standardDefense,
-    },
-  },
-
-  // ===== HEAVY BLOW CORE BUILDS =====
-  {
-    name: 'Hellfire',
-    class: 'Savage',
-    coreSkill: 'Heavy Blow',
-    basicSkill: 'Bloodlust',
-    controlSkills: ['Raze', 'Rampage'],
-    ultimateSkill: 'Ragnarok',
-    statPriority: {
-      groupA: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupB: ['Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupC: [],
-      slot4: ['Evasion'],
-      slot5: slot5ForUltimate('Ragnarok'),
-      defense: standardDefense,
-    },
-  },
-  {
-    name: 'Hellfire PVP',
-    class: 'Savage',
-    coreSkill: 'Heavy Blow',
-    basicSkill: 'Bloodlust',
-    controlSkills: ['Raze', 'Rampage'],
-    ultimateSkill: 'Ragnarok',
-    isPvP: true,
-    statPriority: {
-      groupA: ['Crit Chance', 'Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupB: ['Crit Damage', 'Core Skill Dmg', 'Elemental Damage'],
-      groupC: [],
-      slot4: ['Evasion'],
-      slot5: slot5ForUltimate('Ragnarok'),
-      defense: pvpDefense,
-    },
-  },
+  // Heavy Blow
   {
     name: 'Ice Blast',
     class: 'Savage',
@@ -589,7 +410,7 @@ export function getGearGroup(gearId: string): GearGroup {
 
   if (groupA.includes(gearId)) return 'A';
   if (groupB.includes(gearId)) return 'B';
-  return 'C'; // All armor pieces
+  return 'C';
 }
 
 // Helper to get the slot 5 type for armor pieces
