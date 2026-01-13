@@ -290,70 +290,7 @@ export default function RerollAdvisor() {
         </div>
       </div>
 
-      {/* Step 2: Build Selection (always needed) */}
-      {selectedGear && (
-        <div className="card-game p-6 animate-fade-in">
-          <h3 className="font-cinzel text-xl text-foreground flex items-center gap-2 mb-4">
-            <span className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-sm text-primary">2</span>
-            Select Your Build
-          </h3>
-
-          <div className="flex gap-2 mb-4">
-            {(['Arcanist', 'Savage'] as BuildClass[]).map((cls) => (
-              <button
-                key={cls}
-                onClick={() => {
-                  setSelectedClass(cls);
-                  setSelectedBuild(null);
-                }}
-                className={cn(
-                  "px-4 py-2 rounded-lg font-medium transition-all duration-200",
-                  selectedClass === cls
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-card/50 text-muted-foreground hover:bg-card hover:text-foreground border border-border/50"
-                )}
-              >
-                {cls}
-              </button>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {builds.map((build) => {
-              const isSelected = selectedBuild?.name === build.name;
-              return (
-                <button
-                  key={build.name}
-                  onClick={() => setSelectedBuild(build)}
-                  className={cn(
-                    "p-3 rounded-lg border text-left transition-all duration-200",
-                    isSelected
-                      ? "border-primary bg-primary/10 glow-offensive"
-                      : "border-border/50 bg-card/50 hover:border-primary/50 hover:bg-primary/5"
-                  )}
-                >
-                  <div className="flex items-center gap-2">
-                    <p className={cn("font-semibold text-sm", isSelected ? "text-primary" : "text-foreground")}>
-                      {build.name}
-                    </p>
-                    {build.isPvP && (
-                      <span className="text-[10px] bg-destructive/20 text-destructive px-1.5 py-0.5 rounded">PvP</span>
-                    )}
-                    {build.isAncientGod && (
-                      <span className="text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded">AG</span>
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Core: {build.coreSkill}
-                  </p>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Recommendations (ONLY after build selected) */}
+ {/* Recommendations (ONLY after build selected) */}
       {selectedGear && selectedBuild && recommendations && (
         <div className="card-game p-6 animate-fade-in border-2 border-primary/30">
           <h3 className="font-cinzel text-xl text-foreground flex items-center gap-2 mb-2">
@@ -467,6 +404,71 @@ export default function RerollAdvisor() {
           </div>
         </div>
       )}
+
+      {/* Step 2: Build Selection (always needed) */}
+      {selectedGear && (
+        <div className="card-game p-6 animate-fade-in">
+          <h3 className="font-cinzel text-xl text-foreground flex items-center gap-2 mb-4">
+            <span className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-sm text-primary">2</span>
+            Select Your Build
+          </h3>
+
+          <div className="flex gap-2 mb-4">
+            {(['Arcanist', 'Savage'] as BuildClass[]).map((cls) => (
+              <button
+                key={cls}
+                onClick={() => {
+                  setSelectedClass(cls);
+                  setSelectedBuild(null);
+                }}
+                className={cn(
+                  "px-4 py-2 rounded-lg font-medium transition-all duration-200",
+                  selectedClass === cls
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-card/50 text-muted-foreground hover:bg-card hover:text-foreground border border-border/50"
+                )}
+              >
+                {cls}
+              </button>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {builds.map((build) => {
+              const isSelected = selectedBuild?.name === build.name;
+              return (
+                <button
+                  key={build.name}
+                  onClick={() => setSelectedBuild(build)}
+                  className={cn(
+                    "p-3 rounded-lg border text-left transition-all duration-200",
+                    isSelected
+                      ? "border-primary bg-primary/10 glow-offensive"
+                      : "border-border/50 bg-card/50 hover:border-primary/50 hover:bg-primary/5"
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    <p className={cn("font-semibold text-sm", isSelected ? "text-primary" : "text-foreground")}>
+                      {build.name}
+                    </p>
+                    {build.isPvP && (
+                      <span className="text-[10px] bg-destructive/20 text-destructive px-1.5 py-0.5 rounded">PvP</span>
+                    )}
+                    {build.isAncientGod && (
+                      <span className="text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded">AG</span>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Core: {build.coreSkill}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+     
     </div>
   );
 }
