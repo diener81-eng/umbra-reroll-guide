@@ -1,162 +1,131 @@
-import { useState } from 'react';
-import { 
-  HardHat, Shield, Shirt, Footprints, Circle, Sword, Gem, Sparkles, CircleDot,
-  Zap, ShieldCheck, Target, RotateCcw, RectangleVertical, Hand, ShieldHalf, Grip
+import { useMemo, useState, type ElementType } from 'react';
+import {
+  HardHat,
+  Shield,
+  Shirt,
+  Footprints,
+  Circle,
+  Sword,
+  Gem,
+  Sparkles,
+  CircleDot,
+  Zap,
+  ShieldCheck,
+  Target,
+  RotateCcw,
+  RectangleVertical,
+  Hand,
+  ShieldHalf,
+  Grip,
 } from 'lucide-react';
-import { gearPieces, GearPiece, getSkillSlotLabel } from '@/data/gear';
-import { Build, BuildClass, getBuildsByClass, getGearGroup, getArmorSlot5Type } from '@/data/builds';
+
+import { gearPieces, type GearPiece } from '@/data/gear';
+import { type Build, type BuildClass, getArmorSlot5Type, getBuildsByClass, getGearGroup } from '@/data/builds';
+import { armorSlotConfig, accessorySlotConfig } from '@/data/stats';
 import { cn } from '@/lib/utils';
 import StatItem from './StatItem';
-import { offensiveSlotConfig, accessorySlotConfig } from '@/data/stats';
-import { armorSlotConfig } from '@/data/stats';
 
-const iconMap: Record<string, React.ElementType> = {
+const iconMap: Record<string, ElementType> = {
   'hard-hat': HardHat,
-  'shield': Shield,
-  'shirt': Shirt,
-  'footprints': Footprints,
-  'circle': Circle,
-  'sword': Sword,
-  'gem': Gem,
-  'sparkles': Sparkles,
+  shield: Shield,
+  shirt: Shirt,
+  footprints: Footprints,
+  circle: Circle,
+  sword: Sword,
+  gem: Gem,
+  sparkles: Sparkles,
   'circle-dot': CircleDot,
   'rectangle-vertical': RectangleVertical,
-  'hand': Hand,
+  hand: Hand,
   'shield-half': ShieldHalf,
 };
 
+type ArmorSlot5Type = 'helmPauldron' | 'beltBoots' | 'cuirassGreaves';
+
 interface RecommendationResult {
   gear: GearPiece;
-  build?: Build;
-  // Slot 4 (armor only)
+  build: Build;
+  gearGroup: 'A' | 'B' | 'C';
+
   slot4Stats?: string[];
-  // Slot 5 by armor type
   slot5Stats?: string[];
   slot5Label?: string;
-  slot5Type?: 'helmPauldron' | 'beltBoots' | 'cuirassGreaves';
-  // Group-based priority stats
-  priorityStats?: string[];
-  // Offensive gear specific
+  slot5Type?: ArmorSlot5Type;
+
   offensive5thSlot?: string[];
-  offensiveAnySlot?: string[];
-  // Accessory stats
+  priorityStats?: string[];
+
   accessoryStats?: string[];
-  // Build flags
+
   isAncientGod?: boolean;
   isPvP?: boolean;
 }
 
-// Helper to replace generic skill terms with actual skill names
 function formatSkillStat(stat: string, build: Build): string {
   return stat
-    .replace('Basic Skill Dmg Up', `${build.basicSkill} Dmg Up`)
+    .replace('Basic Skill Dmg Up', `${build.basicSkill} Damage Up`)
     .replace('Basic Skill Haste', `${build.basicSkill} Haste`)
-    .replace('Core Skill Dmg Up', `${build.coreSkill} Dmg Up`)
+    .replace('Core Skill Dmg Up', `${build.coreSkill} Damage Up`)
     .replace('Core Skill Dmg', `${build.coreSkill} Dmg`)
     .replace('Core Skill Haste', `${build.coreSkill} Haste`)
     .replace('Ultimate CD', `${build.ultimateSkill} CD`)
-    .replace('Ultimate Haste', `${build.ultimateSkill} Haste`);
+    .replace('Ultimate Haste', `${build.ultimateSkill} Haste`)
+    .replace('Aether Form Damage Up', `Aether Form Damage Up`);
 }
 
-// Check if a stat is a slot 5 skill stat that should be filtered from priority list
-function isSlot5SkillStat(stat: string, build: Build): boolean {
-  const skillPatterns = [
-    `${build.ultimateSkill} CD`,
-    `${build.ultimateSkill} Haste`,
-    `${build.coreSkill} Dmg`,
-    `${build.coreSkill} Haste`,
-    `${build.basicSkill} Dmg`,
-    `${build.basicSkill} Haste`,
-  ];
-  return skillPatterns.some(pattern => stat.includes(pattern));
-}
 
-function getRecommendations(gear: GearPiece, build?: Build): RecommendationResult {
-  const result: RecommendationResult = { 
-    gear, 
-    build, 
-    isAncientGod: build?.isAncientGod,
-    isPvP: build?.isPvP
-  };
-  
+function getRecommendations(gear: GearPiece, build: Build): RecommendationResult {
   const gearGroup = getGearGroup(gear.id);
-  
-  // Get priority stats based on gear group, filtering out slot 5 stats for armor
-  if (build) {
-    let priorityStats: string[] = [];
-    switch (gearGroup) {
-      case 'A':
-        priorityStats = build.statPriority.groupA;
-        break;
-      case 'B':
-        priorityStats = build.statPriority.groupB;
-        break;
-      case 'C':
-        priorityStats = build.statPriority.defense;
-      break;
 
-    }
-    
-    // Format stats with skill names and filter out slot 5 stats for armor
-if (gear.category === 'armor') {
-  const validArmorStats = armorSlotConfig.anySlot;
+  const result: RecommendationResult = {
+    gear,
+    build,
+    gearGroup,
+    isAncientGod: build.isAncientGod,
+    isPvP: build.isPvP,
+  };
 
-  result.priorityStats = priorityStats
-    .map(stat => formatSkillStat(stat, build))
-    .filter(stat => !isSlot5SkillStat(stat, build))
-    .filter(stat => validArmorStats.includes(stat));
-
-} else if (gear.category === 'offensive') {
-
-  // remove Crit Chance from other slots (it's already shown in slot 5)
-  result.priorityStats = priorityStats
-    .map(stat => formatSkillStat(stat, build))
-    .filter(stat => stat !== 'Crit Chance');
-
-} else {
-
-  // accessories
-  result.priorityStats = priorityStats.map(stat => formatSkillStat(stat, build));
-
-}
-
-  }
-  
-  // Slot 4 (armor only) - Evasion
-  if (gear.has4thSlot && build) {
+  // --- Slot 4 (armor only) ---
+  if (gear.category === 'armor' && gear.has4thSlot) {
     result.slot4Stats = build.statPriority.slot4;
   }
-  
-  // Slot 5 for armor pieces - skill-specific stats with actual skill names
-  if (gear.category === 'armor' && build) {
+
+  // --- Slot 5 (armor only) ---
+  if (gear.category === 'armor') {
     const slot5Type = getArmorSlot5Type(gear.id);
     if (slot5Type) {
-      // Format slot 5 stats with actual skill names
-      result.slot5Stats = build.statPriority.slot5[slot5Type].map(stat => formatSkillStat(stat, build));
-      result.slot5Label = '5th Slot';
       result.slot5Type = slot5Type;
+      result.slot5Label = '5th Slot';
+      result.slot5Stats = build.statPriority.slot5[slot5Type].map((s) => formatSkillStat(s, build));
     }
   }
-  
-  // Offensive gear (Weapon & Jewelry) - Crit Chance is the priority, not Thorn
-if (gear.category === 'offensive' && build) {
-  result.offensive5thSlot = ['Crit Chance'];
 
-  result.priorityStats = build.statPriority.groupA
-    .map(stat => formatSkillStat(stat, build))
-    .filter(stat => stat !== 'Crit Chance'); // 👈 REMOVE crit from other slots
+  // --- Other slots priority lists ---
+  if (gear.category === 'armor') {
+    // Armor other slots = DEFENSE ONLY (no offense stats). Also don’t repeat Evasion here since Slot 4 shows it.
+    const validArmorStats = armorSlotConfig.anySlot;
+    result.priorityStats = build.statPriority.defense
+      .map((s) => formatSkillStat(s, build))
+      .filter((s) => s !== 'Evasion')
+      .filter((s) => validArmorStats.includes(s));
+    return result;
+  }
 
-  return result;
-}
+  if (gear.category === 'offensive') {
+    // 5th slot is Crit Chance on weapon/jewelry
+    result.offensive5thSlot = ['Crit Chance'];
 
+    // “Other Slots” = Group A, but remove Crit Chance because it’s already in slot 5
+    result.priorityStats = build.statPriority.groupA
+      .map((s) => formatSkillStat(s, build))
+      .filter((s) => s !== 'Crit Chance');
 
-  
-  // Accessories (Gauntlets, Bracers) - all slots can have any stat
-if (gear.category === 'accessory') {
+    return result;
+  }
+
+  // accessory (gauntlets/bracers)
   result.accessoryStats = accessorySlotConfig.anySlot;
-}
-
-  
+  result.priorityStats = build.statPriority.groupB.map((s) => formatSkillStat(s, build)).filter((s) => s !== 'Crit Chance');
   return result;
 }
 
@@ -164,27 +133,22 @@ export default function RerollAdvisor() {
   const [selectedGear, setSelectedGear] = useState<GearPiece | null>(null);
   const [selectedClass, setSelectedClass] = useState<BuildClass>('Arcanist');
   const [selectedBuild, setSelectedBuild] = useState<Build | null>(null);
-  
-  // All gear types benefit from build selection for priority stats
-  const needsBuild = selectedGear !== null;
-  const canShowResults = selectedGear !== null && selectedBuild !== null;
-  const recommendations = canShowResults ? getRecommendations(selectedGear, selectedBuild ?? undefined) : null;
-  
-  const handleGearSelect = (gear: GearPiece) => {
-    setSelectedGear(gear);
-    // Keep build selected when switching between armor pieces
-  };
-  
+
+  const armorPieces = useMemo(() => gearPieces.filter((g) => g.category === 'armor'), []);
+  const offensivePieces = useMemo(() => gearPieces.filter((g) => g.category === 'offensive'), []);
+  const accessoryPieces = useMemo(() => gearPieces.filter((g) => g.category === 'accessory'), []);
+  const builds = useMemo(() => getBuildsByClass(selectedClass), [selectedClass]);
+
+  const recommendations = useMemo(() => {
+    if (!selectedGear || !selectedBuild) return null;
+    return getRecommendations(selectedGear, selectedBuild);
+  }, [selectedGear, selectedBuild]);
+
   const handleReset = () => {
     setSelectedGear(null);
     setSelectedBuild(null);
   };
 
-  const armorPieces = gearPieces.filter(g => g.category === 'armor');
-  const offensivePieces = gearPieces.filter(g => g.category === 'offensive');
-  const accessoryPieces = gearPieces.filter(g => g.category === 'accessory');
-  const builds = getBuildsByClass(selectedClass);
-  
   const isAncientGodSelected = selectedBuild?.isAncientGod ?? false;
   const isUltimateGear = (gearId: string) => gearId === 'cuirass' || gearId === 'greaves';
 
@@ -198,7 +162,7 @@ export default function RerollAdvisor() {
             Select Gear Piece
           </h3>
           {selectedGear && (
-            <button 
+            <button
               onClick={handleReset}
               className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 text-sm"
             >
@@ -207,22 +171,23 @@ export default function RerollAdvisor() {
             </button>
           )}
         </div>
-        
+
         {/* Armor */}
         <div className="mb-4">
           <p className="text-sm text-muted-foreground mb-2 flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-defensive" />
-            Armor (Has Evasion + Skill Slots)
+            Armor (Has Evasion + Skill Slot 5)
           </p>
           <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
             {armorPieces.map((gear) => {
               const Icon = iconMap[gear.icon] || Circle;
               const isSelected = selectedGear?.id === gear.id;
               const isHighlighted = isAncientGodSelected && isUltimateGear(gear.id);
+
               return (
                 <button
                   key={gear.id}
-                  onClick={() => handleGearSelect(gear)}
+                  onClick={() => setSelectedGear(gear)}
                   className={cn(
                     "flex flex-col items-center gap-2 p-3 rounded-lg border transition-all duration-200",
                     isSelected
@@ -241,21 +206,22 @@ export default function RerollAdvisor() {
             })}
           </div>
         </div>
-        
+
         {/* Offensive */}
         <div className="mb-4">
           <p className="text-sm text-muted-foreground mb-2 flex items-center gap-2">
             <Zap className="w-4 h-4 text-offensive" />
-            Weapon & Jewelry (Offensive Stats Only) — Always roll Crit Chance and/or Additional Damage Chance on 5th slot
+            Weapon & Jewelry (5th slot = Crit Chance)
           </p>
           <div className="grid grid-cols-4 gap-2">
             {offensivePieces.map((gear) => {
               const Icon = iconMap[gear.icon] || Circle;
               const isSelected = selectedGear?.id === gear.id;
+
               return (
                 <button
                   key={gear.id}
-                  onClick={() => handleGearSelect(gear)}
+                  onClick={() => setSelectedGear(gear)}
                   className={cn(
                     "flex flex-col items-center gap-2 p-3 rounded-lg border transition-all duration-200",
                     isSelected
@@ -272,7 +238,7 @@ export default function RerollAdvisor() {
             })}
           </div>
         </div>
-        
+
         {/* Accessories */}
         <div>
           <p className="text-sm text-muted-foreground mb-2 flex items-center gap-2">
@@ -283,10 +249,11 @@ export default function RerollAdvisor() {
             {accessoryPieces.map((gear) => {
               const Icon = iconMap[gear.icon] || Circle;
               const isSelected = selectedGear?.id === gear.id;
+
               return (
                 <button
                   key={gear.id}
-                  onClick={() => handleGearSelect(gear)}
+                  onClick={() => setSelectedGear(gear)}
                   className={cn(
                     "flex flex-col items-center gap-2 p-3 rounded-lg border transition-all duration-200",
                     isSelected
@@ -305,213 +272,14 @@ export default function RerollAdvisor() {
         </div>
       </div>
 
-      {/* Reroll Recommendations */}
-      {selectedGear && selectedBuild && (
-        <div className="card-game p-6 animate-fade-in border-2 border-primary/30">
-          <h3 className="font-cinzel text-xl text-foreground flex items-center gap-2 mb-2">
-            <Target className="w-6 h-6 text-primary" />
-            Reroll Recommendations
-          </h3>
-          
-          <p className="text-muted-foreground mb-6">
-            For <span className="text-gradient-gold font-semibold">{selectedGear.name}</span>
-            {selectedBuild && (
-              <> with <span className="text-primary font-semibold">{selectedBuild.name}</span> build
-                {selectedBuild.isPvP && <span className="ml-2 text-xs bg-destructive/20 text-destructive px-2 py-0.5 rounded-full">PvP</span>}
-                {selectedBuild.isAncientGod && <span className="ml-2 text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full">Ultimate Focus</span>}
-              </>
-            )}
-          </p>
-          
-          <div className="space-y-4">
-            {/* ARMOR: Slot 5 for Ultimate (Ancient God builds on Cuirass/Greaves - PRIORITY) */}
-            {recommendations?.isAncientGod && recommendations?.slot5Type === 'cuirassGreaves' && recommendations?.slot5Stats && (
-              <div className="p-4 rounded-lg bg-primary/10 border-2 border-primary/50">
-                <div className="flex items-center gap-2 mb-2">
-                  <Zap className="w-5 h-5 text-primary" />
-                  <span className="font-semibold text-primary">
-                    {recommendations.slot5Label}
-                  </span>
-                  <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full ml-auto font-semibold">
-                    PRIORITY
-                  </span>
-                </div>
-                <div className="space-y-2 ml-7">
-                  {recommendations.slot5Stats.map((stat, i) => (
-                    <StatItem key={i} stat={stat} colorClass="text-primary/70" />
-                  ))}
-                </div>
-                <p className="text-xs mt-3 ml-7 p-2 rounded bg-destructive/10 border border-destructive/30">
-                  <span className="text-destructive font-semibold">Target: 8%+ per piece</span>
-                  <span className="text-muted-foreground"> — Requires at least one </span>
-                  <span className="text-destructive font-semibold">Primal</span>
-                  <span className="text-muted-foreground"> piece. Aim for 15%+ total CD across Cuirass and Greaves combined.</span>
-                </p>
-              </div>
-            )}
-
-            {/* ARMOR: Slot 4 (Defensive - Evasion) */}
-            {recommendations?.slot4Stats && (
-              <div className={cn(
-                "p-4 rounded-lg border",
-                recommendations.isPvP 
-                  ? "bg-defensive/20 border-2 border-defensive/50" 
-                  : "bg-defensive/10 border-defensive/30"
-              )}>
-                <div className="flex items-center gap-2 mb-2">
-                  <ShieldCheck className="w-5 h-5 text-defensive" />
-                  <span className="font-semibold text-defensive">4th Slot — Defensive</span>
-                  {recommendations.isPvP && (
-                    <span className="text-xs bg-defensive/20 text-defensive px-2 py-0.5 rounded-full ml-auto font-semibold">
-                      PvP PRIORITY
-                    </span>
-                  )}
-                </div>
-                <div className="ml-7">
-                  {recommendations.slot4Stats.map((stat, i) => (
-                    <StatItem key={i} stat={stat} colorClass="text-defensive/70" />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* ARMOR: Slot 5 for non-Ancient God OR non-Cuirass/Greaves pieces */}
-            {recommendations?.slot5Stats && !(recommendations?.isAncientGod && recommendations?.slot5Type === 'cuirassGreaves') && (
-              <div className="p-4 rounded-lg bg-skill/10 border border-skill/30">
-                <div className="flex items-center gap-2 mb-2">
-                  <Target className="w-5 h-5 text-skill" />
-                  <span className="font-semibold text-skill">
-                    {recommendations.slot5Label}
-                  </span>
-                </div>
-                <div className="space-y-2 ml-7">
-                  {recommendations.slot5Stats.map((stat, i) => (
-                    <StatItem key={i} stat={stat} colorClass="text-skill/70" />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* ARMOR: Build Priority Stats (Other Slots) */}
-            {recommendations?.priorityStats && selectedGear.category === 'armor' && (
-              <div className="p-4 rounded-lg bg-offensive/10 border border-offensive/30">
-                <div className="flex items-center gap-2 mb-2">
-                  <Zap className="w-5 h-5 text-offensive" />
-                  <span className="font-semibold text-offensive">Other Slots — Build Priority Stats</span>
-                </div>
-                <p className="text-xs text-muted-foreground mb-3 ml-7">
-                  Prioritize these stats in order for slots 1-3 and 6:
-                </p>
-                <div className="space-y-2 ml-7">
-                  {recommendations.priorityStats.map((stat, i) => (
-                    <StatItem key={i} stat={stat} colorClass="text-offensive/70" priority={i + 1} />
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {/* OFFENSIVE: 5th Slot Priority */}
-            {recommendations?.offensive5thSlot && (
-              <div className="p-4 rounded-lg bg-offensive/10 border-2 border-offensive/50">
-                <div className="flex items-center gap-2 mb-2">
-                  <Zap className="w-5 h-5 text-offensive" />
-                  <span className="font-semibold text-offensive">5th Slot — Priority Stats</span>
-                  <span className="text-xs bg-offensive/20 text-offensive px-2 py-0.5 rounded-full ml-auto font-semibold">
-                    PRIORITY
-                  </span>
-                </div>
-                <div className="space-y-2 ml-7">
-                  {recommendations.offensive5thSlot.map((stat, i) => (
-                    <StatItem key={i} stat={stat} colorClass="text-offensive/70" />
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {/* OFFENSIVE: Build Priority Stats */}
-            {recommendations?.priorityStats && selectedGear.category === 'offensive' && (
-              <div className="p-4 rounded-lg bg-offensive/10 border border-offensive/30">
-                <div className="flex items-center gap-2 mb-2">
-                  <Zap className="w-5 h-5 text-offensive" />
-                  <span className="font-semibold text-offensive">Other Slots — Build Priority Stats</span>
-                </div>
-                <p className="text-xs text-muted-foreground mb-3 ml-7">
-                  Prioritize these stats in order for slots 1-4 and 6:
-                </p>
-                <div className="space-y-2 ml-7">
-                  {recommendations.priorityStats.map((stat, i) => (
-                    <StatItem key={i} stat={stat} colorClass="text-offensive/70" priority={i + 1} />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* OFFENSIVE: Other Slot Stats (when no build selected) */}
-            {recommendations?.offensiveAnySlot && !recommendations?.priorityStats && (
-              <div className="p-4 rounded-lg bg-muted/30 border border-border/50">
-                <div className="flex items-center gap-2 mb-2">
-                  <Target className="w-5 h-5 text-muted-foreground" />
-                  <span className="font-semibold text-foreground">Other Slots — Available Stats</span>
-                </div>
-                <p className="text-xs text-muted-foreground mb-3 ml-7">
-                  Select a build to see priority order
-                </p>
-                <div className="space-y-2 ml-7">
-                  {recommendations.offensiveAnySlot.map((stat, i) => (
-                    <StatItem key={i} stat={stat} colorClass="text-muted-foreground" />
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {/* ACCESSORY: Build Priority Stats */}
-            {recommendations?.priorityStats && selectedGear.category === 'accessory' && (
-              <div className="p-4 rounded-lg bg-primary/10 border border-primary/30">
-                <div className="flex items-center gap-2 mb-2">
-                  <Grip className="w-5 h-5 text-primary" />
-                  <span className="font-semibold text-primary">All Slots — Build Priority Stats</span>
-                </div>
-                <p className="text-xs text-muted-foreground mb-3 ml-7">
-                  Prioritize these stats in order for all 6 slots:
-                </p>
-                <div className="space-y-2 ml-7">
-                  {recommendations.priorityStats.map((stat, i) => (
-                    <StatItem key={i} stat={stat} colorClass="text-primary/70" priority={i + 1} />
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {/* ACCESSORY: All Slots (when no build selected) */}
-            {recommendations?.accessoryStats && !recommendations?.priorityStats && (
-              <div className="p-4 rounded-lg bg-primary/10 border border-primary/30">
-                <div className="flex items-center gap-2 mb-2">
-                  <Grip className="w-5 h-5 text-primary" />
-                  <span className="font-semibold text-primary">All Slots — Available Stats</span>
-                </div>
-                <p className="text-xs text-muted-foreground mb-3 ml-7">
-                  Select a build to see priority order
-                </p>
-                <div className="space-y-2 ml-7">
-                  {recommendations.accessoryStats.map((stat, i) => (
-                    <StatItem key={i} stat={stat} colorClass="text-primary/70" />
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Step 2: Build Selection (only for armor) */}
-      {selectedGear && needsBuild && (
+      {/* Step 2: Build Selection (always needed) */}
+      {selectedGear && (
         <div className="card-game p-6 animate-fade-in">
           <h3 className="font-cinzel text-xl text-foreground flex items-center gap-2 mb-4">
             <span className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-sm text-primary">2</span>
             Select Your Build
           </h3>
-          
-          {/* Class Tabs */}
+
           <div className="flex gap-2 mb-4">
             {(['Arcanist', 'Savage'] as BuildClass[]).map((cls) => (
               <button
@@ -531,8 +299,7 @@ export default function RerollAdvisor() {
               </button>
             ))}
           </div>
-          
-          {/* Build Grid */}
+
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {builds.map((build) => {
               const isSelected = selectedBuild?.name === build.name;
@@ -565,18 +332,121 @@ export default function RerollAdvisor() {
               );
             })}
           </div>
-          
-          {selectedBuild && (
-            <div className="mt-4 p-3 rounded-lg bg-muted/30 border border-border/50">
-              <p className="text-sm text-muted-foreground">
-                <span className="text-foreground font-medium">{selectedBuild.name}</span> uses{' '}
-                <span className="text-skill">{selectedBuild.basicSkill}</span> (Basic),{' '}
-                <span className="text-offensive">{selectedBuild.coreSkill}</span> (Core),{' '}
-                <span className="text-defensive">{selectedBuild.controlSkills.join(' / ')}</span> (Control), and{' '}
-                <span className="text-primary">{selectedBuild.ultimateSkill}</span> (Ultimate)
-              </p>
-            </div>
-          )}
+        </div>
+      )}
+
+      {/* Recommendations (ONLY after build selected) */}
+      {selectedGear && selectedBuild && recommendations && (
+        <div className="card-game p-6 animate-fade-in border-2 border-primary/30">
+          <h3 className="font-cinzel text-xl text-foreground flex items-center gap-2 mb-2">
+            <Target className="w-6 h-6 text-primary" />
+            Reroll Recommendations
+          </h3>
+
+          <p className="text-muted-foreground mb-6">
+            For <span className="text-gradient-gold font-semibold">{selectedGear.name}</span>
+            <> with <span className="text-primary font-semibold">{selectedBuild.name}</span> build</>
+            {selectedBuild.isPvP && <span className="ml-2 text-xs bg-destructive/20 text-destructive px-2 py-0.5 rounded-full">PvP</span>}
+            {selectedBuild.isAncientGod && <span className="ml-2 text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full">Ultimate Focus</span>}
+          </p>
+
+          <div className="space-y-4">
+            {/* ARMOR: Slot 4 */}
+            {selectedGear.category === 'armor' && recommendations.slot4Stats && (
+              <div className={cn(
+                "p-4 rounded-lg border",
+                recommendations.isPvP ? "bg-defensive/20 border-2 border-defensive/50" : "bg-defensive/10 border-defensive/30"
+              )}>
+                <div className="flex items-center gap-2 mb-2">
+                  <ShieldCheck className="w-5 h-5 text-defensive" />
+                  <span className="font-semibold text-defensive">4th Slot — Defensive</span>
+                </div>
+                <div className="ml-7">
+                  {recommendations.slot4Stats.map((stat, i) => (
+                    <StatItem key={i} stat={stat} colorClass="text-defensive/70" />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ARMOR: Slot 5 */}
+            {selectedGear.category === 'armor' && recommendations.slot5Stats && (
+              <div className="p-4 rounded-lg bg-skill/10 border border-skill/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <Target className="w-5 h-5 text-skill" />
+                  <span className="font-semibold text-skill">{recommendations.slot5Label}</span>
+                </div>
+                <div className="space-y-2 ml-7">
+                  {recommendations.slot5Stats.map((stat, i) => (
+                    <StatItem key={i} stat={stat} colorClass="text-skill/70" />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ARMOR: Other Slots */}
+            {selectedGear.category === 'armor' && recommendations.priorityStats && (
+              <div className="p-4 rounded-lg bg-muted/30 border border-border/50">
+                <div className="flex items-center gap-2 mb-2">
+                  <ShieldHalf className="w-5 h-5 text-muted-foreground" />
+                  <span className="font-semibold text-foreground">Other Slots — Defensive Priority</span>
+                </div>
+                <p className="text-xs text-muted-foreground mb-3 ml-7">Prioritize these stats in order for slots 1-3 and 6:</p>
+                <div className="space-y-2 ml-7">
+                  {recommendations.priorityStats.map((stat, i) => (
+                    <StatItem key={i} stat={stat} colorClass="text-muted-foreground" priority={i + 1} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* OFFENSIVE: Slot 5 */}
+            {selectedGear.category === 'offensive' && recommendations.offensive5thSlot && (
+              <div className="p-4 rounded-lg bg-offensive/10 border-2 border-offensive/50">
+                <div className="flex items-center gap-2 mb-2">
+                  <Zap className="w-5 h-5 text-offensive" />
+                  <span className="font-semibold text-offensive">5th Slot — Priority Stats</span>
+                </div>
+                <div className="space-y-2 ml-7">
+                  {recommendations.offensive5thSlot.map((stat, i) => (
+                    <StatItem key={i} stat={stat} colorClass="text-offensive/70" />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* OFFENSIVE: Other slots */}
+            {selectedGear.category === 'offensive' && recommendations.priorityStats && (
+              <div className="p-4 rounded-lg bg-offensive/10 border border-offensive/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <Zap className="w-5 h-5 text-offensive" />
+                  <span className="font-semibold text-offensive">Other Slots — Build Priority Stats</span>
+                </div>
+                <p className="text-xs text-muted-foreground mb-3 ml-7">Prioritize these stats in order for slots 1-4 and 6:</p>
+                <div className="space-y-2 ml-7">
+                  {recommendations.priorityStats.map((stat, i) => (
+                    <StatItem key={i} stat={stat} colorClass="text-offensive/70" priority={i + 1} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ACCESSORY: all slots */}
+            {selectedGear.category === 'accessory' && recommendations.priorityStats && (
+              <div className="p-4 rounded-lg bg-primary/10 border border-primary/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <Grip className="w-5 h-5 text-primary" />
+                  <span className="font-semibold text-primary">All Slots — Build Priority Stats</span>
+                </div>
+                <p className="text-xs text-muted-foreground mb-3 ml-7">Prioritize these stats in order for all 6 slots:</p>
+                <div className="space-y-2 ml-7">
+                  {recommendations.priorityStats.map((stat, i) => (
+                    <StatItem key={i} stat={stat} colorClass="text-primary/70" priority={i + 1} />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

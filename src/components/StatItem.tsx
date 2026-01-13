@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ChevronRight, ChevronDown } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { getStatByName } from '@/data/stats';
+import { cn } from '@/lib/utils';
 
 interface StatItemProps {
   stat: string;
@@ -12,30 +12,29 @@ interface StatItemProps {
 export default function StatItem({ stat, colorClass, priority }: StatItemProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const statDef = getStatByName(stat);
-  
+
   if (!statDef) {
-    // No description available, render simple non-expandable item
     return (
       <div className="flex items-center gap-2">
-        {priority && (
-          <span className={cn("w-5 h-5 rounded-full bg-muted flex items-center justify-center text-xs font-medium", colorClass)}>
+        {typeof priority === 'number' && (
+          <span className="w-5 h-5 rounded-full bg-muted/40 border border-border/40 flex items-center justify-center text-[11px] text-muted-foreground">
             {priority}
           </span>
         )}
-        <ChevronRight className={cn("w-4 h-4", colorClass)} />
+        <ChevronRight className={cn("w-4 h-4 opacity-60", colorClass)} />
         <span className="text-foreground font-medium">{stat}</span>
       </div>
     );
   }
-  
+
   return (
-    <div className="space-y-1">
+    <div className="space-y-2">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="flex items-center gap-2 w-full text-left hover:opacity-80 transition-opacity group"
+        className="flex items-center gap-2 w-full text-left"
       >
-        {priority && (
-          <span className={cn("w-5 h-5 rounded-full bg-muted flex items-center justify-center text-xs font-medium shrink-0", colorClass)}>
+        {typeof priority === 'number' && (
+          <span className="w-5 h-5 rounded-full bg-muted/40 border border-border/40 flex items-center justify-center text-[11px] text-muted-foreground">
             {priority}
           </span>
         )}
@@ -45,18 +44,15 @@ export default function StatItem({ stat, colorClass, priority }: StatItemProps) 
           <ChevronRight className={cn("w-4 h-4 transition-transform", colorClass)} />
         )}
         <span className="text-foreground font-medium">{stat}</span>
-        <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity ml-1">
-          (click for details)
-        </span>
       </button>
-      
+
       {isExpanded && (
-        <div className="ml-6 p-3 rounded-lg bg-background/50 border border-border/30 animate-fade-in">
-          <p className="text-sm font-medium text-foreground mb-1">
-            {statDef.summary}
+        <div className="ml-6 space-y-2 text-sm">
+          <p className="text-muted-foreground">
+            <span className="text-foreground font-semibold">Quick:</span> {statDef.summary}
           </p>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            {statDef.detail}
+          <p className="text-muted-foreground">
+            <span className="text-foreground font-semibold">Details:</span> {statDef.detail}
           </p>
         </div>
       )}
