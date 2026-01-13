@@ -1,44 +1,62 @@
-import { useMemo, useState, type ElementType } from 'react';
+import { useState, type ElementType } from 'react';
 import {
-  HardHat,
-  Shield,
-  Shirt,
-  Footprints,
-  Circle,
-  Sword,
-  Gem,
-  Sparkles,
-  CircleDot,
-  Zap,
-  ShieldCheck,
-  Target,
-  RotateCcw,
-  RectangleVertical,
-  Hand,
-  ShieldHalf,
-  Grip,
+  HardHat, Shield, Shirt, Footprints, Circle, Sword, Gem, Sparkles, CircleDot,
+  Zap, ShieldCheck, Target, RotateCcw, RectangleVertical, Hand, ShieldHalf, Grip
 } from 'lucide-react';
 
 import { gearPieces, type GearPiece } from '@/data/gear';
-import { type Build, type BuildClass, getArmorSlot5Type, getBuildsByClass, getGearGroup } from '@/data/builds';
-import { armorSlotConfig, accessorySlotConfig } from '@/data/stats';
+import { type Build, type BuildClass, getBuildsByClass, getGearGroup, getArmorSlot5Type } from '@/data/builds';
 import { cn } from '@/lib/utils';
 import StatItem from './StatItem';
+import { offensiveSlotConfig, accessorySlotConfig, armorSlotConfig } from '@/data/stats';
 
 const iconMap: Record<string, ElementType> = {
   'hard-hat': HardHat,
-  shield: Shield,
-  shirt: Shirt,
-  footprints: Footprints,
-  circle: Circle,
-  sword: Sword,
-  gem: Gem,
-  sparkles: Sparkles,
+  'shield': Shield,
+  'shirt': Shirt,
+  'footprints': Footprints,
+  'circle': Circle,
+  'sword': Sword,
+  'gem': Gem,
+  'sparkles': Sparkles,
   'circle-dot': CircleDot,
   'rectangle-vertical': RectangleVertical,
-  hand: Hand,
+  'hand': Hand,
   'shield-half': ShieldHalf,
 };
+
+// Helper to replace ONLY slot-5 template stats with actual skill names.
+// IMPORTANT: Do NOT rename "Core Skill Dmg" (generic stat) into "Fireball Dmg" etc.
+function formatSkillStat(stat: string, build: Build): string {
+  // Slot 5 templates ONLY
+  if (stat === 'Basic Skill Dmg Up') return `${build.basicSkill} Dmg Up`;
+  if (stat === 'Basic Skill Haste') return `${build.basicSkill} Haste`;
+
+  if (stat === 'Core Skill Dmg Up') return `${build.coreSkill} Dmg Up`;
+  if (stat === 'Core Skill Haste') return `${build.coreSkill} Haste`;
+
+  if (stat === 'Ultimate CD') return `${build.ultimateSkill} CD`;
+  if (stat === 'Ultimate Haste') return `${build.ultimateSkill} Haste`;
+
+  // Everything else must stay generic:
+  // "Core Skill Dmg", "Crit Damage", "Elemental Damage", etc.
+  return stat;
+}
+
+// Check if a stat is a slot 5 skill stat that should be filtered from priority list
+function isSlot5SkillStat(stat: string, build: Build): boolean {
+  const slot5Strings = new Set<string>([
+    `${build.basicSkill} Dmg Up`,
+    `${build.basicSkill} Haste`,
+    `${build.coreSkill} Dmg Up`,
+    `${build.coreSkill} Haste`,
+    `${build.ultimateSkill} CD`,
+    `${build.ultimateSkill} Haste`,
+  ]);
+
+  return slot5Strings.has(stat);
+}
+
 
 type ArmorSlot5Type = 'helmPauldron' | 'beltBoots' | 'cuirassGreaves';
 
